@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PULSAR Development Limited — Intelligence Beyond Boundaries</title>
+<meta name="description" content="PULSAR Development Limited — a technology company building the next generation of intelligent technology. 星脉发展有限公司">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&family=Manrope:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#04060C;
+  --bg-soft:#070B16;
+  --panel:#0A0E18;
+  --blue:#5EA0FF;
+  --purple:#8B6CFF;
+  --cyan:#54E0FF;
+  --text:#F4F7FC;
+  --text-2:#9AA3B5;
+  --text-3:#6E7A92;
+  --lead:#C6D2E8;
+  --grad-text:linear-gradient(90deg,#5EA0FF 0%,#9E7AFF 55%,#54E0FF 100%);
+  --grad-btn:linear-gradient(90deg,#2E6BFF,#7D5CFF);
+  --glass:rgba(255,255,255,.05);
+  --line:rgba(255,255,255,.08);
+  --font-head:'Geist','Noto Sans SC',sans-serif;
+  --font-body:'Manrope','Noto Sans SC',sans-serif;
+  --font-mono:'Geist Mono','Noto Sans SC',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:#000;font-family:var(--font-body);color:var(--text);overflow-x:hidden}
+#stage{width:1920px;transform-origin:top left;background:var(--bg);position:relative}
+section{position:relative;overflow:hidden}
+.wrap{position:relative;padding-left:160px;padding-right:160px}
+
+/* ---------- shared bits ---------- */
+.eyebrow{display:flex;align-items:center;gap:12px}
+.eyebrow .bar{width:28px;height:2px;background:linear-gradient(90deg,var(--blue),var(--cyan))}
+.eyebrow span{font-family:var(--font-mono);font-size:13px;letter-spacing:3px;color:var(--blue)}
+.h2{font-family:var(--font-head);font-weight:700;color:var(--text)}
+.grad{background:var(--grad-text);-webkit-background-clip:text;background-clip:text;color:transparent}
+.btn{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;font-family:var(--font-head);font-weight:600;font-size:17px;padding:17px 36px;cursor:pointer;border:none;text-decoration:none;transition:transform .2s ease,box-shadow .2s ease}
+.btn-primary{background:var(--grad-btn);color:#fff;box-shadow:0 8px 28px rgba(61,107,255,.35)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(61,107,255,.5)}
+.btn-ghost{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.2);color:#DCF0F5}
+.btn-ghost:hover{background:rgba(255,255,255,.1);transform:translateY(-2px)}
+.tag{display:inline-block;font-family:var(--font-mono);font-size:11px;letter-spacing:1.5px;padding:7px 14px;border-radius:999px;background:rgba(94,160,255,.12);border:1px solid rgba(94,160,255,.25);color:#A8C6FF}
+.tag.purple{background:rgba(139,108,255,.12);border-color:rgba(139,108,255,.3);color:#C0AEFF}
+.tag.cyan{background:rgba(84,224,255,.1);border-color:rgba(84,224,255,.25);color:#8FEFFF}
+
+/* drawn visual slots */
+.visual{position:relative;border-radius:24px;overflow:hidden;border:1px solid var(--line);
+  background:linear-gradient(180deg,#090F21 0%,#050A17 100%)}
+.visual::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(84,224,255,.14) 0%,rgba(84,224,255,0) 70%)}
+.visual.purple::before{background:radial-gradient(circle at 50% 50%,rgba(139,108,255,.14) 0%,rgba(139,108,255,0) 70%)}
+.visual.blue::before{background:radial-gradient(circle at 50% 50%,rgba(94,160,255,.14) 0%,rgba(94,160,255,0) 70%)}
+.orbit{position:absolute;border-radius:50%;border:1.5px solid}
+.orbit.c{border-color:rgba(84,224,255,.22)}
+.orbit.p{border-color:rgba(139,108,255,.22)}
+.orbit.b{border-color:rgba(94,160,255,.22)}
+.node{position:absolute;border-radius:50%}
+.node.c{background:var(--cyan);box-shadow:0 0 10px rgba(84,224,255,.8)}
+.node.b{background:var(--blue);box-shadow:0 0 10px rgba(94,160,255,.8)}
+.node.p{background:var(--purple);box-shadow:0 0 10px rgba(139,108,255,.8)}
+.link{position:absolute;height:1px;background:linear-gradient(90deg,rgba(94,160,255,0),rgba(94,160,255,.4),rgba(94,160,255,0))}
+.link.p{background:linear-gradient(90deg,rgba(139,108,255,0),rgba(139,108,255,.35),rgba(139,108,255,0))}
+
+/* ---------- navbar ---------- */
+.nav{position:absolute;top:0;left:0;width:1920px;height:88px;z-index:50;display:flex;align-items:center;justify-content:space-between;
+  padding:0 64px;background:rgba(11,15,28,.55);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.07)}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{position:relative;width:34px;height:34px;flex:none}
+.logo .ring{position:absolute;inset:1px;border-radius:50%;border:2px solid transparent;background:linear-gradient(135deg,var(--blue),var(--purple)) border-box;-webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.logo .orbit2{position:absolute;left:1px;top:11px;width:31px;height:12px;border-radius:50%;border:1.5px solid rgba(84,224,255,.5)}
+.logo .core{position:absolute;left:13px;top:13px;width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple))}
+.logo .sat{position:absolute;left:16px;top:16px;width:4.4px;height:4.4px;border-radius:50%;background:var(--cyan)}
+.brand-name{display:flex;flex-direction:column;gap:2px}
+.brand-name b{font-family:var(--font-head);font-weight:600;font-size:16px;letter-spacing:1.6px;color:var(--text)}
+.brand-name span{font-family:var(--font-mono);font-size:10px;letter-spacing:1.6px;color:var(--text-3)}
+.nav-links{display:flex;gap:34px}
+.nav-links a{font-family:var(--font-head);font-weight:500;font-size:14px;color:var(--text-2);text-decoration:none;transition:color .2s}
+.nav-links a:hover,.nav-links a.active{color:#fff}
+.nav-right{display:flex;align-items:center;gap:20px}
+.lang-btn{background:none;border:none;font-family:var(--font-mono);font-size:14px;color:var(--text-2);cursor:pointer;padding:8px 4px;transition:color .2s}
+.lang-btn:hover{color:#fff}
+.nav .btn{padding:11px 24px;font-size:14px}
+
+/* ---------- hero ---------- */
+.hero{height:1000px;padding:130px 160px 70px;display:flex;align-items:center;
+  background:linear-gradient(180deg,#070B16 0%,#04060C 100%)}
+.hero-bg{position:absolute;inset:0;pointer-events:none}
+.grid-lines{position:absolute;inset:0;
+  background-image:repeating-linear-gradient(90deg,rgba(94,160,255,.06) 0 1px,transparent 1px 320px),
+                   repeating-linear-gradient(0deg,rgba(94,160,255,.06) 0 1px,transparent 1px 320px)}
+.glow{position:absolute;border-radius:50%}
+.glow-blue{width:1040px;height:1040px;left:-260px;top:-320px;background:radial-gradient(circle,rgba(46,107,255,.32) 0%,rgba(46,107,255,0) 70%)}
+.glow-purple{width:900px;height:900px;right:-200px;top:-160px;background:radial-gradient(circle,rgba(140,92,255,.26) 0%,rgba(140,92,255,0) 70%)}
+.glow-cyan{width:760px;height:760px;left:640px;bottom:-300px;background:radial-gradient(circle,rgba(26,217,255,.14) 0%,rgba(26,217,255,0) 70%)}
+.horizon-glow{width:2200px;height:240px;left:-140px;bottom:180px;background:radial-gradient(ellipse,rgba(56,158,255,.10) 0%,rgba(56,158,255,0) 70%)}
+.horizon-line{position:absolute;left:300px;bottom:297px;width:1320px;height:1px;
+  background:linear-gradient(90deg,rgba(84,224,255,0),rgba(84,224,255,.5) 50%,rgba(139,108,255,0))}
+.horizon-line::before,.horizon-line::after{content:'';position:absolute;top:-1px;height:3px;width:3px;border-radius:50%}
+.horizon-line::before{left:30%;background:var(--cyan);box-shadow:0 0 8px rgba(84,224,255,.9)}
+.horizon-line::after{left:76%;background:var(--purple);box-shadow:0 0 8px rgba(139,108,255,.9)}
+.tick{position:absolute;bottom:297px;width:1px;transform:translateY(-100%)}
+.hero-content{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:24px;width:100%}
+.hero-badge{display:inline-flex;align-items:center;gap:10px;padding:10px 22px;border-radius:999px;background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(12px);font-family:var(--font-mono);font-size:13px;letter-spacing:2.4px;color:#9FB4D9}
+.hero-badge .dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px rgba(84,224,255,.8)}
+.hero h1{font-family:var(--font-head);font-weight:700;font-size:108px;letter-spacing:2px;line-height:1.08;color:var(--text)}
+.hero .sub{font-size:22px;color:#A8B3C7}
+.hero .mono{font-family:var(--font-mono);font-size:13px;letter-spacing:2.4px;color:#8FA3C7}
+.hero-cta{display:flex;gap:16px;margin-top:8px}
+
+/* ---------- about ---------- */
+.about{padding:150px 160px;background:var(--bg);display:flex;gap:90px}
+.about-left{width:820px;flex:none;display:flex;flex-direction:column;gap:30px}
+.about-left .h2{font-size:62px;line-height:72px}
+.about-left .lead{font-family:var(--font-head);font-weight:500;font-size:20px;letter-spacing:1px;color:var(--lead)}
+.about-left .rule{width:96px;height:4px;border-radius:2px;background:linear-gradient(90deg,#2E6BFF,var(--cyan))}
+.about-right{flex:1;display:flex;flex-direction:column;gap:32px}
+.about-right p{font-size:17px;line-height:30px;color:var(--text-2)}
+.about-right p.dim{font-size:16px;color:var(--text-3)}
+.stat-strip{display:flex;gap:32px;padding:26px 32px;border-radius:16px;background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(16px)}
+.stat-strip>div{display:flex;flex-direction:column;gap:6px}
+.stat-strip .v{font-family:var(--font-mono);font-weight:500;font-size:15px}
+.stat-strip .v.c{color:var(--cyan)}
+.stat-strip .v.b{color:var(--blue)}
+.stat-strip .v.p{color:var(--purple)}
+.stat-strip .l{font-size:13px;color:var(--text-3)}
+
+/* ---------- technologies ---------- */
+.technologies{padding:130px 160px;background:linear-gradient(180deg,#060A17 0%,#04060C 100%);display:flex;flex-direction:column;gap:60px}
+.sec-head{display:flex;flex-direction:column;gap:16px}
+.sec-head .h2{font-size:56px}
+.sec-head .sub{font-size:17px;color:var(--text-2)}
+.tech-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.tech-card{position:relative;padding:40px 44px;border-radius:20px;background:rgba(255,255,255,.03);border:1px solid var(--line);transition:border-color .25s,background .25s}
+.tech-card:hover{border-color:rgba(94,160,255,.35);background:rgba(255,255,255,.05)}
+.tech-card .num{font-family:var(--font-mono);font-size:14px;letter-spacing:2px;color:var(--blue)}
+.tech-card h3{font-family:var(--font-head);font-weight:700;font-size:30px;margin:14px 0 10px;color:var(--text)}
+.tech-card .tags{font-family:var(--font-mono);font-size:12px;letter-spacing:1.5px;color:var(--cyan);margin-bottom:14px}
+.tech-card p{font-size:15px;line-height:26px;color:var(--text-2)}
+
+/* ---------- solutions ---------- */
+.solutions{padding:130px 160px;background:var(--bg);display:flex;flex-direction:column;gap:64px}
+.sol-row{display:flex;gap:60px;align-items:center}
+.sol-row .visual{width:780px;height:420px;flex:none}
+.sol-row .txt{flex:1;display:flex;flex-direction:column;gap:16px}
+.sol-row.flip .visual{order:2}
+.sol-row.flip .txt{order:1}
+.sol-row .code{font-family:var(--font-mono);font-size:13px;letter-spacing:2px;color:var(--blue)}
+.sol-row h3{font-family:var(--font-head);font-weight:700;font-size:34px;color:var(--text)}
+.sol-row .tagline{font-family:var(--font-head);font-weight:600;font-size:17px;color:var(--lead)}
+.sol-row p{font-size:15px;line-height:26px;color:var(--text-2)}
+.sol-row .tags{display:flex;gap:10px;margin-top:6px}
+
+/* ---------- innovation ---------- */
+.innovation{height:680px;background:linear-gradient(180deg,#08101E 0%,#04060C 100%)}
+.innovation .wrap{height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:28px;position:relative}
+.orbit-wrap{position:absolute;inset:0;pointer-events:none}
+.orbit-wrap .o1{position:absolute;left:140px;top:40px;width:1640px;height:600px;border-radius:50%;border:1px solid rgba(94,160,255,.1)}
+.orbit-wrap .o2{position:absolute;left:340px;top:120px;width:1240px;height:440px;border-radius:50%;border:1px solid rgba(139,108,255,.12)}
+.orbit-wrap .nd{position:absolute;border-radius:50%}
+.inno-glow-l{width:900px;height:900px;left:-300px;top:130px;background:radial-gradient(circle,rgba(140,92,255,.22) 0%,rgba(140,92,255,0) 70%)}
+.inno-glow-r{width:900px;height:900px;right:-300px;top:-70px;background:radial-gradient(circle,rgba(46,107,255,.22) 0%,rgba(46,107,255,0) 70%)}
+.innovation .eyebrow{justify-content:center}
+.innovation .t1{font-family:var(--font-head);font-weight:700;font-size:76px;line-height:88px;color:var(--text)}
+.innovation .t2{font-family:var(--font-head);font-weight:700;font-size:76px;line-height:88px}
+.innovation .desc{max-width:860px;font-size:17px;line-height:30px;color:var(--text-2)}
+
+/* ---------- products ---------- */
+.products{padding:130px 160px;background:linear-gradient(180deg,#060A17 0%,#04060C 100%);display:flex;flex-direction:column;gap:56px}
+.prod-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.prod-card{border-radius:20px;overflow:hidden;background:rgba(255,255,255,.03);border:1px solid var(--line);transition:border-color .25s,transform .25s}
+.prod-card:hover{border-color:rgba(94,160,255,.35);transform:translateY(-4px)}
+.prod-card .visual{height:230px;border-radius:0;border:none;border-bottom:1px solid var(--line)}
+.prod-body{padding:28px 36px 30px;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.prod-body h3{font-family:var(--font-head);font-weight:700;font-size:24px;color:var(--text)}
+.prod-body p{font-size:14px;line-height:24px;color:var(--text-2)}
+.prod-body .more{font-family:var(--font-head);font-weight:600;font-size:14px;color:var(--cyan);text-decoration:none;margin-top:6px}
+.prod-body .more:hover{text-decoration:underline}
+
+/* ---------- capabilities ---------- */
+.caps{padding:110px 160px;background:var(--bg);display:flex;flex-direction:column;gap:56px}
+.caps .h2{font-size:48px}
+.cap-row{display:flex;gap:48px}
+.cap{flex:1;display:flex;flex-direction:column;gap:12px}
+.cap h3{font-family:var(--font-head);font-weight:600;font-size:22px;color:var(--text)}
+.cap p{font-size:14px;line-height:24px;color:var(--text-2)}
+.cap-div{width:1px;height:84px;background:rgba(255,255,255,.08);flex:none;align-self:center}
+
+/* ---------- news ---------- */
+.news{padding:130px 160px;background:linear-gradient(180deg,#060A17 0%,#04060C 100%);display:flex;flex-direction:column;gap:56px}
+.news .h2{font-size:56px}
+.news-head{display:flex;justify-content:space-between;align-items:flex-end;gap:40px}
+.news-cats{font-family:var(--font-mono);font-size:13px;color:var(--text-3);padding-bottom:10px}
+.news-row{display:flex;gap:48px}
+.news-featured{width:900px;flex:none;border-radius:20px;overflow:hidden;background:rgba(255,255,255,.03);border:1px solid var(--line)}
+.news-featured .visual{height:360px;border-radius:0;border:none;border-bottom:1px solid var(--line)}
+.news-fbody{padding:32px 36px 34px;display:flex;flex-direction:column;gap:12px}
+.meta{font-family:var(--font-mono);font-size:12px;letter-spacing:1px;color:var(--cyan)}
+.meta i{font-style:normal;color:var(--text-3)}
+.news-fbody h3{font-family:var(--font-head);font-weight:700;font-size:30px;color:var(--text)}
+.news-fbody p{font-size:15px;line-height:26px;color:var(--text-2)}
+.news-list{flex:1;display:flex;flex-direction:column}
+.news-item{padding:24px 24px 26px;border-bottom:1px solid rgba(255,255,255,.06);cursor:pointer;transition:background .2s}
+.news-item:first-child{border-top:1px solid rgba(255,255,255,.06)}
+.news-item:hover{background:rgba(255,255,255,.03)}
+.news-item h4{font-family:var(--font-head);font-weight:600;font-size:18px;color:var(--text);margin-top:10px;line-height:30px}
+.news-more{display:flex;align-items:center;gap:8px;padding:26px 24px;font-family:var(--font-head);font-weight:600;font-size:15px;color:var(--cyan);cursor:pointer}
+.news-more:hover{text-decoration:underline}
+
+/* ---------- careers ---------- */
+.careers{padding:130px 160px;background:var(--bg);display:flex;gap:90px;align-items:center}
+.careers-left{flex:1;display:flex;flex-direction:column;gap:26px}
+.careers-left .h2{font-size:60px;line-height:72px}
+.careers-left .lead{font-family:var(--font-head);font-weight:500;font-size:20px;color:var(--lead)}
+.careers-left p{max-width:700px;font-size:16px;line-height:30px;color:var(--text-2)}
+.chips{display:flex;gap:12px;margin-top:6px}
+.chip{font-family:var(--font-head);font-weight:500;font-size:13px;color:var(--lead);padding:9px 20px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14)}
+.careers .btn{align-self:flex-start;margin-top:10px;padding:16px 32px;font-size:16px}
+.careers-visual{width:620px;height:440px;flex:none}
+
+/* ---------- contact ---------- */
+.contact{padding:140px 160px;background:linear-gradient(180deg,#08101E 0%,#04060C 100%);display:flex;flex-direction:column;align-items:center;text-align:center;gap:56px}
+.contact-glow{width:900px;height:900px;left:510px;top:120px;background:radial-gradient(circle,rgba(46,107,255,.16) 0%,rgba(46,107,255,0) 70%)}
+.contact .eyebrow{justify-content:center}
+.contact .h2{font-size:64px}
+.contact .sub{font-size:17px;color:var(--text-2)}
+.contact-cards{display:flex;gap:32px;width:100%}
+.ccard{flex:1;padding:34px 36px;border-radius:18px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);text-align:left;display:flex;flex-direction:column;gap:12px}
+.ccard h3{font-family:var(--font-head);font-weight:600;font-size:21px;color:var(--text)}
+.ccard p{font-size:14px;color:var(--text-2)}
+.email-pill{display:inline-flex;align-items:center;gap:14px;padding:18px 40px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(84,224,255,.35);font-family:var(--font-mono);font-weight:500;font-size:18px;color:var(--text);text-decoration:none;transition:box-shadow .2s}
+.email-pill:hover{box-shadow:0 0 30px rgba(84,224,255,.2)}
+.email-pill .dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px rgba(84,224,255,.8)}
+.contact .note{font-size:12px;color:#5C657A}
+
+/* ---------- footer ---------- */
+.footer{padding:90px 160px 40px;background:#030509;position:relative;overflow:hidden}
+.watermark{position:absolute;left:0;top:120px;width:1920px;text-align:center;font-family:var(--font-head);font-weight:800;font-size:190px;line-height:190px;letter-spacing:14px;
+  background:linear-gradient(180deg,rgba(94,160,255,.10),rgba(139,108,255,.03));-webkit-background-clip:text;background-clip:text;color:transparent;pointer-events:none;user-select:none}
+.footer-inner{position:relative;display:flex;gap:100px}
+.f-brand{width:520px;flex:none;display:flex;flex-direction:column;gap:20px}
+.f-brand .tagline{max-width:440px;font-size:14px;line-height:24px;color:var(--text-3)}
+.f-col{flex:1;display:flex;flex-direction:column;gap:16px}
+.f-col .h{font-family:var(--font-mono);font-size:12px;letter-spacing:2.5px;color:var(--text-3);margin-bottom:2px}
+.f-col a{font-size:14px;color:var(--text-2);text-decoration:none;transition:color .2s}
+.f-col a:hover{color:#fff}
+.f-bottom{position:relative;display:flex;justify-content:space-between;gap:24px;margin-top:56px;padding-top:28px;border-top:1px solid rgba(255,255,255,.07)}
+.f-bottom span{font-family:var(--font-mono);font-size:13px;color:var(--text-3)}
+.f-bottom .slogan{letter-spacing:1.5px;color:var(--blue)}
+</style>
+</head>
+<body>
+<div id="stage">
+
+<!-- ============ NAVBAR ============ -->
+<nav class="nav">
+  <div class="brand">
+    <div class="logo"><div class="ring"></div><div class="orbit2"></div><div class="core"></div><div class="sat"></div></div>
+    <div class="brand-name"><b>PULSAR</b><span>AI · SOFTWARE · INNOVATION</span></div>
+  </div>
+  <div class="nav-links">
+    <a href="#hero" class="active" data-en="Home" data-zh="首页">Home</a>
+    <a href="#about" data-en="About" data-zh="关于我们">About</a>
+    <a href="#technologies" data-en="Technologies" data-zh="技术领域">Technologies</a>
+    <a href="#solutions" data-en="Solutions" data-zh="解决方案">Solutions</a>
+    <a href="#products" data-en="Products" data-zh="产品与服务">Products</a>
+    <a href="#news" data-en="News" data-zh="新闻资讯">News</a>
+    <a href="#careers" data-en="Careers" data-zh="加入我们">Careers</a>
+  </div>
+  <div class="nav-right">
+    <button class="lang-btn" id="langBtn" onclick="toggleLang()">中文</button>
+    <a class="btn btn-primary" href="#contact" data-en="Contact Us" data-zh="联系我们">Contact Us</a>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="hero">
+  <div class="hero-bg">
+    <div class="grid-lines"></div>
+    <div class="glow glow-blue"></div>
+    <div class="glow glow-purple"></div>
+    <div class="glow glow-cyan"></div>
+    <div class="glow horizon-glow"></div>
+    <div class="horizon-line"></div>
+    <div class="tick" style="left:340px;height:14px;background:rgba(255,255,255,.08)"></div>
+    <div class="tick" style="left:520px;height:20px;background:rgba(84,160,255,.28)"></div>
+    <div class="tick" style="left:700px;height:26px;background:rgba(84,224,255,.55)"></div>
+    <div class="tick" style="left:1240px;height:20px;background:rgba(139,108,255,.28)"></div>
+    <div class="tick" style="left:1440px;height:14px;background:rgba(255,255,255,.08)"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-badge"><span class="dot"></span><span data-en="PULSAR DEVELOPMENT LIMITED · HONG KONG" data-zh="星脉发展有限公司 · 中国香港">PULSAR DEVELOPMENT LIMITED · HONG KONG</span></div>
+    <h1><span>INTELLIGENCE</span><br><span class="grad" data-en="BEYOND BOUNDARIES." data-zh="突破边界。">BEYOND BOUNDARIES.</span></h1>
+    <div class="sub" data-en="Building the Next Generation of Intelligent Technology." data-zh="构建下一代智能技术。">Building the Next Generation of Intelligent Technology.</div>
+    <div class="mono" data-en="AI · INTELLIGENT SYSTEMS · DIGITAL INNOVATION" data-zh="人工智能 · 智能系统 · 数字创新">AI · INTELLIGENT SYSTEMS · DIGITAL INNOVATION</div>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="#technologies" data-en="Explore Our Technologies" data-zh="探索技术领域">Explore Our Technologies</a>
+      <a class="btn btn-ghost" href="#about" data-en="Discover PULSAR" data-zh="了解星脉">Discover PULSAR</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ABOUT ============ -->
+<section class="about" id="about">
+  <div class="about-left">
+    <div class="eyebrow"><div class="bar"></div><span data-en="01 / ABOUT US" data-zh="01 / 关于我们">01 / ABOUT US</span></div>
+    <div class="h2" data-en="Technology That Moves The World Forward." data-zh="让科技推动世界向前。">Technology That Moves The World Forward.</div>
+    <div class="lead" data-en="A global technology company, built on intelligence." data-zh="立足国际市场的科技企业，以智能构建未来。">A global technology company, built on intelligence.</div>
+    <div class="rule"></div>
+  </div>
+  <div class="about-right">
+    <p data-en="PULSAR Development Limited is a technology company serving the global market, building future-facing intelligent products and technology solutions through artificial intelligence, software engineering and digital innovation."
+       data-zh="星脉发展有限公司（PULSAR Development Limited）是一家立足国际市场的科技企业，致力于通过人工智能、软件工程与数字技术创新，构建面向未来的智能产品和技术解决方案。">
+      PULSAR Development Limited is a technology company serving the global market, building future-facing intelligent products and technology solutions through artificial intelligence, software engineering and digital innovation.</p>
+    <p class="dim" data-en="We believe the value of technology lies not only in pushing boundaries, but in making complex things simple — so that intelligence truly serves the real world."
+       data-zh="我们相信，技术的价值不仅在于突破边界，更在于让复杂的事情变得简单，让智能真正服务于现实世界。">
+      We believe the value of technology lies not only in pushing boundaries, but in making complex things simple — so that intelligence truly serves the real world.</p>
+    <div class="stat-strip">
+      <div><span class="v c">22.31°N 114.17°E</span><span class="l" data-en="Hong Kong · Headquarters" data-zh="香港 · 总部">Hong Kong · Headquarters</span></div>
+      <div><span class="v b" data-en="GLOBAL MARKETS" data-zh="全球市场">GLOBAL MARKETS</span><span class="l" data-en="Serving global markets" data-zh="面向全球市场">Serving global markets</span></div>
+      <div><span class="v p" data-en="AI × SOFTWARE" data-zh="智能 × 软件">AI × SOFTWARE</span><span class="l" data-en="Intelligence × Software Engineering" data-zh="智能与软件工程双轮驱动">Intelligence × Software Engineering</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TECHNOLOGIES ============ -->
+<section class="technologies" id="technologies">
+  <div class="sec-head">
+    <div class="eyebrow"><div class="bar"></div><span data-en="02 / TECHNOLOGIES" data-zh="02 / 技术领域">02 / TECHNOLOGIES</span></div>
+    <div class="h2" data-en="Technology At Our Core." data-zh="以技术为核心。">Technology At Our Core.</div>
+    <div class="sub" data-en="Four technology pillars form PULSAR's core capability map." data-zh="四大技术方向，构成星脉的核心能力版图。">Four technology pillars form PULSAR's core capability map.</div>
+  </div>
+  <div class="tech-grid">
+    <div class="tech-card"><div class="num">01</div><h3 data-en="Artificial Intelligence" data-zh="人工智能">Artificial Intelligence</h3>
+      <div class="tags" data-en="LLM · GenAI · Agents · Multimodal" data-zh="大模型 · 生成式 AI · 智能体 · 多模态">LLM · GenAI · Agents · Multimodal</div>
+      <p data-en="Exploring large language models, generative AI, intelligent agents and multimodal technology — bringing AI into real business scenarios."
+         data-zh="探索大语言模型、生成式 AI、智能 Agent、多模态技术与 AI 应用创新，让智能能力融入真实业务场景。">
+        Exploring large language models, generative AI, intelligent agents and multimodal technology — bringing AI into real business scenarios.</p></div>
+    <div class="tech-card"><div class="num">02</div><h3 data-en="Intelligent Systems" data-zh="智能系统">Intelligent Systems</h3>
+      <div class="tags" data-en="Automation · Decisions · Integration" data-zh="自动化 · 智能决策 · 系统集成">Automation · Decisions · Integration</div>
+      <p data-en="Building automation, intelligent decision-making, business collaboration and complex system integration capabilities."
+         data-zh="构建自动化、智能决策、业务协同与复杂系统集成能力。">
+        Building automation, intelligent decision-making, business collaboration and complex system integration capabilities.</p></div>
+    <div class="tech-card"><div class="num">03</div><h3 data-en="Software Engineering" data-zh="软件工程">Software Engineering</h3>
+      <div class="tags" data-en="Architecture · Cloud Native · Distributed" data-zh="云原生 · 分布式 · 高性能">Architecture · Cloud Native · Distributed</div>
+      <p data-en="Modern software architecture, cloud-native technology, distributed systems and high-performance application development."
+         data-zh="专注现代化软件架构、云原生技术、分布式系统与高性能应用开发。">
+        Modern software architecture, cloud-native technology, distributed systems and high-performance application development.</p></div>
+    <div class="tech-card"><div class="num">04</div><h3 data-en="Digital Infrastructure" data-zh="数字基础设施">Digital Infrastructure</h3>
+      <div class="tags" data-en="Cloud · Data · Smart Foundation" data-zh="云计算 · 数据平台 · 数字底座">Cloud · Data · Smart Foundation</div>
+      <p data-en="Exploring cloud computing, data platforms, intelligent infrastructure and the digital technology foundation."
+         data-zh="探索云计算、数据平台、智能基础设施与数字化技术底座，为智能应用提供坚实支撑。">
+        Exploring cloud computing, data platforms, intelligent infrastructure and the digital technology foundation.</p></div>
+  </div>
+</section>
+
+<!-- ============ SOLUTIONS ============ -->
+<section class="solutions" id="solutions">
+  <div class="sec-head">
+    <div class="eyebrow"><div class="bar"></div><span data-en="03 / SOLUTIONS" data-zh="03 / 解决方案">03 / SOLUTIONS</span></div>
+    <div class="h2" data-en="Intelligence Into Action." data-zh="让智能落地。">Intelligence Into Action.</div>
+    <div class="sub" data-en="Putting intelligence to work, creating real value." data-zh="让智能落地，创造真实价值。">Putting intelligence to work, creating real value.</div>
+  </div>
+
+  <div class="sol-row">
+    <div class="visual blue">
+      <div class="orbit b" style="left:470px;top:70px;width:340px;height:340px"></div>
+      <div class="node b" style="left:150px;top:130px;width:8px;height:8px"></div>
+      <div class="node c" style="left:410px;top:90px;width:5px;height:5px"></div>
+      <div class="node p" style="left:600px;top:300px;width:6px;height:6px"></div>
+      <div class="link" style="left:158px;top:133px;width:240px"></div>
+    </div>
+    <div class="txt">
+      <div class="code">S.01</div>
+      <h3 data-en="AI-Powered Applications" data-zh="人工智能应用">AI-Powered Applications</h3>
+      <div class="tagline" data-en="GenAI and agents in real scenarios" data-zh="生成式 AI 与智能体的真实落地">GenAI and agents in real scenarios</div>
+      <p data-en="Bringing generative AI and intelligent agents into real business scenarios — from proof of concept to scaled deployment."
+         data-zh="将生成式 AI 和智能 Agent 融入实际业务场景，从概念验证到规模化落地，让智能真正参与业务运转。">
+        Bringing generative AI and intelligent agents into real business scenarios — from proof of concept to scaled deployment.</p>
+      <div class="tags"><span class="tag">LLM</span><span class="tag">AI AGENT</span><span class="tag cyan" data-en="MULTIMODAL" data-zh="多模态">MULTIMODAL</span></div>
+    </div>
+  </div>
+
+  <div class="sol-row flip">
+    <div class="visual purple">
+      <div class="orbit p" style="left:470px;top:70px;width:340px;height:340px"></div>
+      <div class="node c" style="left:150px;top:130px;width:8px;height:8px"></div>
+      <div class="node p" style="left:410px;top:90px;width:5px;height:5px"></div>
+      <div class="node b" style="left:600px;top:300px;width:6px;height:6px"></div>
+      <div class="link" style="left:158px;top:133px;width:240px"></div>
+    </div>
+    <div class="txt">
+      <div class="code">S.02</div>
+      <h3 data-en="Intelligent Automation" data-zh="智能自动化">Intelligent Automation</h3>
+      <div class="tagline" data-en="AI-driven workflows and decisions" data-zh="AI 驱动的工作流与决策">AI-driven workflows and decisions</div>
+      <p data-en="Improving efficiency and business collaboration with AI and automation — systems handle the repetitive, teams focus on creativity."
+         data-zh="通过 AI 与自动化技术提升工作效率和业务协同能力，把重复劳动交给系统，把创造力留给团队。">
+        Improving efficiency and business collaboration with AI and automation — systems handle the repetitive, teams focus on creativity.</p>
+      <div class="tags"><span class="tag">WORKFLOW</span><span class="tag purple" data-en="DECISION INTELLIGENCE" data-zh="智能决策">DECISION INTELLIGENCE</span></div>
+    </div>
+  </div>
+
+  <div class="sol-row">
+    <div class="visual blue">
+      <div class="orbit b" style="left:470px;top:70px;width:340px;height:340px"></div>
+      <div class="node p" style="left:150px;top:130px;width:8px;height:8px"></div>
+      <div class="node b" style="left:410px;top:90px;width:5px;height:5px"></div>
+      <div class="node c" style="left:600px;top:300px;width:6px;height:6px"></div>
+      <div class="link p" style="left:158px;top:133px;width:240px"></div>
+    </div>
+    <div class="txt">
+      <div class="code">S.03</div>
+      <h3 data-en="Enterprise Digital Solutions" data-zh="企业数字化解决方案">Enterprise Digital Solutions</h3>
+      <div class="tagline" data-en="Modern systems for modern enterprises" data-zh="面向企业的现代化系统与服务">Modern systems for modern enterprises</div>
+      <p data-en="Modern software systems and digital technology services for enterprises — covering architecture design, system building and long-term evolution."
+         data-zh="提供面向企业的现代化软件系统与数字化技术服务，覆盖架构设计、系统建设与长期演进。">
+        Modern software systems and digital technology services for enterprises — covering architecture design, system building and long-term evolution.</p>
+      <div class="tags"><span class="tag">CLOUD NATIVE</span><span class="tag cyan" data-en="SYSTEM INTEGRATION" data-zh="系统集成">SYSTEM INTEGRATION</span></div>
+    </div>
+  </div>
+
+  <div class="sol-row flip">
+    <div class="visual">
+      <div class="orbit c" style="left:470px;top:70px;width:340px;height:340px"></div>
+      <div class="node b" style="left:150px;top:130px;width:8px;height:8px"></div>
+      <div class="node c" style="left:410px;top:90px;width:5px;height:5px"></div>
+      <div class="node p" style="left:600px;top:300px;width:6px;height:6px"></div>
+      <div class="link" style="left:158px;top:133px;width:240px"></div>
+    </div>
+    <div class="txt">
+      <div class="code">S.04</div>
+      <h3 data-en="Data Intelligence" data-zh="数据智能">Data Intelligence</h3>
+      <div class="tagline" data-en="Turning data into decisions" data-zh="让数据转化为决策">Turning data into decisions</div>
+      <p data-en="Releasing the value of data through analytics, intelligent processing and algorithms — every decision backed by reliable data."
+         data-zh="利用数据分析、智能处理与算法技术释放数据价值，让每一次决策都有可靠的数据支撑。">
+        Releasing the value of data through analytics, intelligent processing and algorithms — every decision backed by reliable data.</p>
+      <div class="tags"><span class="tag">DATA PLATFORM</span><span class="tag cyan" data-en="ALGORITHM ENGINE" data-zh="算法引擎">ALGORITHM ENGINE</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INNOVATION ============ -->
+<section class="innovation" id="innovation">
+  <div class="glow inno-glow-l"></div>
+  <div class="glow inno-glow-r"></div>
+  <div class="orbit-wrap">
+    <div class="o1"></div><div class="o2"></div>
+    <div class="nd" style="left:520px;top:120px;width:8px;height:8px;background:var(--cyan);box-shadow:0 0 10px rgba(84,224,255,.8)"></div>
+    <div class="nd" style="left:1350px;top:200px;width:8px;height:8px;background:var(--purple);box-shadow:0 0 10px rgba(139,108,255,.8)"></div>
+    <div class="nd" style="left:960px;top:420px;width:6px;height:6px;background:var(--blue);box-shadow:0 0 8px rgba(94,160,255,.8)"></div>
+    <div class="nd" style="left:720px;top:560px;width:6px;height:6px;background:var(--cyan);box-shadow:0 0 8px rgba(84,224,255,.8)"></div>
+  </div>
+  <div class="wrap">
+    <div class="eyebrow"><div class="bar"></div><span data-en="04 / INNOVATION" data-zh="04 / 创新探索">04 / INNOVATION</span></div>
+    <div class="t1" data-en="Beyond What Exists." data-zh="超越既有。">Beyond What Exists.</div>
+    <div class="t2 grad" data-en="Into What's Next." data-zh="探索未来。">Into What's Next.</div>
+    <div class="desc" data-en="The boundaries of technology keep expanding, and so do the possibilities of intelligence. PULSAR explores AI, automation, digital infrastructure and next-generation software — moving innovation from concept to reality."
+         data-zh="技术的边界不断延伸，智能的可能性持续拓展。星脉持续探索人工智能、自动化、数字基础设施和新一代软件技术，推动创新从概念走向现实。">
+      The boundaries of technology keep expanding, and so do the possibilities of intelligence. PULSAR explores AI, automation, digital infrastructure and next-generation software — moving innovation from concept to reality.</div>
+  </div>
+</section>
+
+<!-- ============ PRODUCTS ============ -->
+<section class="products" id="products">
+  <div class="sec-head">
+    <div class="eyebrow"><div class="bar"></div><span data-en="05 / PRODUCTS" data-zh="05 / 产品与服务">05 / PRODUCTS</span></div>
+    <div class="h2" data-en="Built for a Smarter Future." data-zh="为更智能的未来而生。">Built for a Smarter Future.</div>
+    <div class="sub" data-en="A focused portfolio of AI platforms and intelligent systems — engineered for production."
+         data-zh="聚焦 AI 平台与智能系统，覆盖从模型能力到落地部署的完整产品组合。">A focused portfolio of AI platforms and intelligent systems — engineered for production.</div>
+  </div>
+  <div class="prod-grid">
+    <div class="prod-card">
+      <div class="visual blue">
+        <div class="orbit b" style="left:560px;top:-30px;width:260px;height:260px"></div>
+        <div class="node b" style="left:120px;top:80px;width:7px;height:7px"></div>
+        <div class="node c" style="left:360px;top:40px;width:4px;height:4px"></div>
+        <div class="node p" style="left:620px;top:170px;width:5px;height:5px"></div>
+        <div class="link" style="left:128px;top:83px;width:220px"></div>
+      </div>
+      <div class="prod-body">
+        <h3 data-en="AI Intelligence Platform" data-zh="AI 智能平台">AI Intelligence Platform</h3>
+        <p data-en="An all-in-one AI platform unifying model capabilities, data pipelines and application orchestration."
+           data-zh="一体化人工智能平台，集模型能力、数据管线与应用编排于一体。">An all-in-one AI platform unifying model capabilities, data pipelines and application orchestration.</p>
+        <span class="tag" data-en="LLM PLATFORM" data-zh="大模型平台">LLM PLATFORM</span>
+        <a class="more" href="#contact" data-en="→ Learn More" data-zh="→ 了解更多">→ Learn More</a>
+      </div>
+    </div>
+    <div class="prod-card">
+      <div class="visual purple">
+        <div class="orbit p" style="left:560px;top:-30px;width:260px;height:260px"></div>
+        <div class="node c" style="left:120px;top:80px;width:7px;height:7px"></div>
+        <div class="node p" style="left:360px;top:40px;width:4px;height:4px"></div>
+        <div class="node b" style="left:620px;top:170px;width:5px;height:5px"></div>
+        <div class="link" style="left:128px;top:83px;width:220px"></div>
+      </div>
+      <div class="prod-body">
+        <h3 data-en="Intelligent Agent System" data-zh="智能体系统">Intelligent Agent System</h3>
+        <p data-en="An intelligent agent system for business — task orchestration, tool calling and multi-agent collaboration."
+           data-zh="面向业务的智能 Agent 系统，支持任务编排、工具调用与多角色协同。">An intelligent agent system for business — task orchestration, tool calling and multi-agent collaboration.</p>
+        <span class="tag purple" data-en="AGENTS" data-zh="智能体">AGENTS</span>
+        <a class="more" href="#contact" data-en="→ Learn More" data-zh="→ 了解更多">→ Learn More</a>
+      </div>
+    </div>
+    <div class="prod-card">
+      <div class="visual blue">
+        <div class="orbit b" style="left:560px;top:-30px;width:260px;height:260px"></div>
+        <div class="node p" style="left:120px;top:80px;width:7px;height:7px"></div>
+        <div class="node b" style="left:360px;top:40px;width:4px;height:4px"></div>
+        <div class="node c" style="left:620px;top:170px;width:5px;height:5px"></div>
+        <div class="link p" style="left:128px;top:83px;width:220px"></div>
+      </div>
+      <div class="prod-body">
+        <h3 data-en="Digital Collaboration Platform" data-zh="数字协作平台">Digital Collaboration Platform</h3>
+        <p data-en="A modern digital collaboration platform connecting teams, processes and knowledge."
+           data-zh="现代化数字协作平台，连接团队、流程与知识，提升组织协同效率。">A modern digital collaboration platform connecting teams, processes and knowledge.</p>
+        <span class="tag cyan" data-en="COLLABORATION" data-zh="数字协作">COLLABORATION</span>
+        <a class="more" href="#contact" data-en="→ Learn More" data-zh="→ 了解更多">→ Learn More</a>
+      </div>
+    </div>
+    <div class="prod-card">
+      <div class="visual">
+        <div class="orbit c" style="left:560px;top:-30px;width:260px;height:260px"></div>
+        <div class="node b" style="left:120px;top:80px;width:7px;height:7px"></div>
+        <div class="node c" style="left:360px;top:40px;width:4px;height:4px"></div>
+        <div class="node p" style="left:620px;top:170px;width:5px;height:5px"></div>
+        <div class="link" style="left:128px;top:83px;width:220px"></div>
+      </div>
+      <div class="prod-body">
+        <h3 data-en="Smart Data Engine" data-zh="智能数据引擎">Smart Data Engine</h3>
+        <p data-en="A smart data engine connecting collection, governance, analysis and intelligent applications end to end."
+           data-zh="智能数据引擎，打通数据采集、治理、分析与智能应用的全链路。">A smart data engine connecting collection, governance, analysis and intelligent applications end to end.</p>
+        <span class="tag cyan" data-en="DATA ENGINE" data-zh="数据引擎">DATA ENGINE</span>
+        <a class="more" href="#contact" data-en="→ Learn More" data-zh="→ 了解更多">→ Learn More</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CAPABILITIES ============ -->
+<section class="caps" id="capabilities">
+  <div class="eyebrow"><div class="bar"></div><span data-en="06 / TECHNOLOGY CAPABILITIES" data-zh="06 / 技术实力">06 / TECHNOLOGY CAPABILITIES</span></div>
+  <div class="h2" data-en="Core Engineering Disciplines." data-zh="核心工程能力。">Core Engineering Disciplines.</div>
+  <div class="cap-row">
+    <div class="cap"><h3 data-en="AI Research" data-zh="AI 研究">AI Research</h3>
+      <p data-en="Frontier AI research: LLMs, agents and multimodal technology" data-zh="前沿 AI 研究：大模型、Agent 与多模态技术">Frontier AI research: LLMs, agents and multimodal technology</p></div>
+    <div class="cap-div"></div>
+    <div class="cap"><h3 data-en="Cloud Native" data-zh="云原生">Cloud Native</h3>
+      <p data-en="Cloud-native architecture: containers, microservices and elastic scheduling" data-zh="云原生架构：容器化、微服务与弹性调度">Cloud-native architecture: containers, microservices and elastic scheduling</p></div>
+    <div class="cap-div"></div>
+    <div class="cap"><h3 data-en="Intelligent Automation" data-zh="智能自动化">Intelligent Automation</h3>
+      <p data-en="Intelligent automation: workflow orchestration and decision engines" data-zh="智能自动化：流程编排与智能决策引擎">Intelligent automation: workflow orchestration and decision engines</p></div>
+    <div class="cap-div"></div>
+    <div class="cap"><h3 data-en="Distributed Systems" data-zh="分布式系统">Distributed Systems</h3>
+      <p data-en="Distributed systems: high concurrency, high availability and data consistency" data-zh="分布式系统：高并发、高可用与数据一致性">Distributed systems: high concurrency, high availability and data consistency</p></div>
+  </div>
+</section>
+
+<!-- ============ NEWS ============ -->
+<section class="news" id="news">
+  <div class="news-head">
+    <div class="sec-head">
+      <div class="eyebrow"><div class="bar"></div><span data-en="07 / NEWS" data-zh="07 / 新闻资讯">07 / NEWS</span></div>
+      <div class="h2" data-en="Latest Updates. New Possibilities." data-zh="最新动态，新的可能。">Latest Updates. New Possibilities.</div>
+    </div>
+    <div class="news-cats" data-en="Company · Innovation · Product · Insights" data-zh="公司动态 · 技术创新 · 产品发布 · 行业洞察">Company · Innovation · Product · Insights</div>
+  </div>
+  <div class="news-row">
+    <div class="news-featured">
+      <div class="visual blue">
+        <div class="orbit c" style="left:580px;top:30px;width:300px;height:300px"></div>
+        <div class="node b" style="left:150px;top:120px;width:8px;height:8px"></div>
+        <div class="node c" style="left:430px;top:70px;width:5px;height:5px"></div>
+        <div class="node p" style="left:700px;top:260px;width:6px;height:6px"></div>
+        <div class="node c" style="left:320px;top:280px;width:4px;height:4px"></div>
+        <div class="link" style="left:158px;top:123px;width:264px"></div>
+        <div class="link p" style="left:600px;top:262px;width:106px"></div>
+      </div>
+      <div class="news-fbody">
+        <div class="meta">2026.11.12 <i>·</i> <span data-en="Company News" data-zh="公司动态">Company News</span></div>
+        <h3 data-en="PULSAR's intelligent technology stack enters a new upgrade cycle" data-zh="星脉智能技术体系迎来新一轮能力升级">PULSAR's intelligent technology stack enters a new upgrade cycle</h3>
+        <p data-en="The latest exploration and practice around AI and intelligent systems, continuously advancing our technical capabilities."
+           data-zh="围绕人工智能与智能系统的最新探索与实践，持续推动技术能力演进。">The latest exploration and practice around AI and intelligent systems, continuously advancing our technical capabilities.</p>
+      </div>
+    </div>
+    <div class="news-list">
+      <div class="news-item">
+        <div class="meta">2026.11.05 <i>·</i> <span data-en="Innovation" data-zh="技术创新">Innovation</span></div>
+        <h4 data-en="Engineering practices for a multimodal agent framework" data-zh="多模态智能体框架的工程化实践">Engineering practices for a multimodal agent framework</h4>
+      </div>
+      <div class="news-item">
+        <div class="meta">2026.10.28 <i>·</i> <span data-en="Product" data-zh="产品发布">Product</span></div>
+        <h4 data-en="Smart Data Engine prototype: simplifying the path from data to decisions" data-zh="智能数据引擎原型发布：从数据到决策的链路简化">Smart Data Engine prototype: simplifying the path from data to decisions</h4>
+      </div>
+      <div class="news-item">
+        <div class="meta">2026.10.16 <i>·</i> <span data-en="Insights" data-zh="行业洞察">Insights</span></div>
+        <h4 data-en="2026 trends in enterprise intelligent transformation" data-zh="2026 企业智能化转型趋势观察">2026 trends in enterprise intelligent transformation</h4>
+      </div>
+      <div class="news-more" data-en="→ View All Updates" data-zh="→ 查看全部动态">→ View All Updates</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CAREERS ============ -->
+<section class="careers" id="careers">
+  <div class="careers-left">
+    <div class="eyebrow"><div class="bar"></div><span data-en="08 / CAREERS" data-zh="08 / 加入我们">08 / CAREERS</span></div>
+    <div class="h2" data-en="Build What Comes Next." data-zh="创造下一个未来。">Build What Comes Next.</div>
+    <div class="lead" data-en="Grow with people who love technology and bold ideas." data-zh="与优秀的人一起，让想法成为现实。">Grow with people who love technology and bold ideas.</div>
+    <p data-en="We believe innovation comes from continuous exploration, cross-discipline collaboration and great people working together. We look forward to growing with talent who love technology and dare to innovate."
+       data-zh="我们相信技术创新来自持续探索、跨领域协作与优秀人才的共同努力。期待与热爱技术、勇于创新、关注未来的你一起成长。">
+      We believe innovation comes from continuous exploration, cross-discipline collaboration and great people working together. We look forward to growing with talent who love technology and dare to innovate.</p>
+    <div class="chips">
+      <span class="chip" data-en="Hong Kong" data-zh="香港">Hong Kong</span>
+      <span class="chip" data-en="Beijing" data-zh="北京">Beijing</span>
+      <span class="chip" data-en="Shenzhen" data-zh="深圳">Shenzhen</span>
+      <span class="chip" data-en="Tokyo" data-zh="东京">Tokyo</span>
+    </div>
+    <a class="btn btn-primary" href="#contact" data-en="Explore Openings" data-zh="查看职位机会">Explore Openings</a>
+  </div>
+  <div class="visual purple careers-visual">
+    <div class="orbit p" style="left:130px;top:40px;width:360px;height:360px"></div>
+    <div class="orbit c" style="left:220px;top:130px;width:180px;height:180px"></div>
+    <div class="node c" style="left:298px;top:208px;width:24px;height:24px;box-shadow:0 0 30px rgba(84,224,255,.9)"></div>
+    <div class="node b" style="left:120px;top:150px;width:7px;height:7px"></div>
+    <div class="node p" style="left:460px;top:320px;width:6px;height:6px"></div>
+    <div class="link" style="left:127px;top:153px;width:180px"></div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="contact" id="contact">
+  <div class="glow contact-glow"></div>
+  <div class="eyebrow"><div class="bar"></div><span data-en="09 / CONTACT" data-zh="09 / 联系我们">09 / CONTACT</span></div>
+  <div class="h2" data-en="Let's Build the Future Together." data-zh="与我们共建未来。">Let's Build the Future Together.</div>
+  <div class="sub" data-en="Whether technical cooperation, product inquiries or business partnerships — we look forward to hearing from you."
+       data-zh="无论是技术合作、产品咨询还是商业合作，我们期待与您交流。">Whether technical cooperation, product inquiries or business partnerships — we look forward to hearing from you.</div>
+  <div class="contact-cards">
+    <div class="ccard"><h3 data-en="Business Cooperation" data-zh="商业合作">Business Cooperation</h3><p data-en="Business cooperation and partnerships" data-zh="商业合作与业务洽谈">Business cooperation and partnerships</p></div>
+    <div class="ccard"><h3 data-en="Technology Partnership" data-zh="技术合作">Technology Partnership</h3><p data-en="Technology partnership and ecosystem building" data-zh="技术合作与生态共建">Technology partnership and ecosystem building</p></div>
+    <div class="ccard"><h3 data-en="General Inquiries" data-zh="一般咨询">General Inquiries</h3><p data-en="General inquiries and more information" data-zh="一般咨询与更多信息">General inquiries and more information</p></div>
+  </div>
+  <a class="email-pill" href="mailto:info@pulsar-dev.com"><span class="dot"></span>info@pulsar-dev.com</a>
+  <div class="note" data-en="Email is a design placeholder — verify before launch" data-zh="邮箱为待确认的设计占位信息，正式上线前核实">Email is a design placeholder — verify before launch</div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="watermark">PULSAR</div>
+  <div class="footer-inner">
+    <div class="f-brand">
+      <div class="brand">
+        <div class="logo" style="width:30px;height:30px"><div class="ring"></div><div class="orbit2" style="left:1px;top:10px;width:27px;height:10px"></div><div class="core" style="left:11px;top:11px;width:7px;height:7px"></div><div class="sat" style="left:14px;top:14px;width:3.8px;height:3.8px"></div></div>
+        <div class="brand-name"><b style="font-size:15px" data-en="PULSAR DEVELOPMENT LIMITED" data-zh="星脉发展有限公司">PULSAR DEVELOPMENT LIMITED</b>
+          <span data-en="INTELLIGENCE BEYOND BOUNDARIES" data-zh="让智能突破边界">INTELLIGENCE BEYOND BOUNDARIES</span></div>
+      </div>
+      <div class="tagline" data-en="A Technology Company Exploring the Future of Intelligence and Digital Innovation."
+           data-zh="一家探索智能与数字创新未来的科技企业。">A Technology Company Exploring the Future of Intelligence and Digital Innovation.</div>
+    </div>
+    <div class="f-col">
+      <div class="h" data-en="SITEMAP" data-zh="站点导航">SITEMAP</div>
+      <a href="#about" data-en="About Us" data-zh="关于我们">About Us</a>
+      <a href="#technologies" data-en="Technologies" data-zh="技术领域">Technologies</a>
+      <a href="#solutions" data-en="Solutions" data-zh="解决方案">Solutions</a>
+      <a href="#products" data-en="Products" data-zh="产品与服务">Products</a>
+      <a href="#news" data-en="News" data-zh="新闻资讯">News</a>
+      <a href="#careers" data-en="Careers" data-zh="加入我们">Careers</a>
+      <a href="#contact" data-en="Contact" data-zh="联系我们">Contact</a>
+    </div>
+    <div class="f-col">
+      <div class="h" data-en="LEGAL" data-zh="法律信息">LEGAL</div>
+      <a href="#" data-en="Privacy Policy" data-zh="隐私政策">Privacy Policy</a>
+      <a href="#" data-en="Terms of Use" data-zh="使用条款">Terms of Use</a>
+      <a href="#" data-en="Disclaimer" data-zh="免责声明">Disclaimer</a>
+    </div>
+  </div>
+  <div class="f-bottom">
+    <span data-en="Copyright 2026 PULSAR Development Limited. All Rights Reserved."
+          data-zh="Copyright 2026 星脉发展有限公司 PULSAR Development Limited. All Rights Reserved.">Copyright 2026 PULSAR Development Limited. All Rights Reserved.</span>
+    <span class="slogan" data-en="Intelligence Beyond Boundaries." data-zh="让智能突破边界。">Intelligence Beyond Boundaries.</span>
+  </div>
+</footer>
+
+</div><!-- /stage -->
+
+<script>
+/* ---------- language toggle ---------- */
+var lang = 'en';
+function applyLang(l){
+  lang = l;
+  document.documentElement.lang = (l === 'zh') ? 'zh-CN' : 'en';
+  document.title = (l === 'zh')
+    ? '星脉发展有限公司 — 让智能突破边界'
+    : 'PULSAR Development Limited — Intelligence Beyond Boundaries';
+  document.querySelectorAll('[data-en]').forEach(function(el){
+    el.innerHTML = el.getAttribute('data-' + l);
+  });
+  document.getElementById('langBtn').textContent = (l === 'zh') ? 'EN' : '中文';
+}
+function toggleLang(){ applyLang(lang === 'en' ? 'zh' : 'en'); }
+
+/* ---------- nav active state ---------- */
+document.querySelectorAll('.nav-links a').forEach(function(a){
+  a.addEventListener('click', function(){
+    document.querySelectorAll('.nav-links a').forEach(function(x){ x.classList.remove('active'); });
+    a.classList.add('active');
+  });
+});
+
+/* ---------- proportional scaling (1920 design canvas) ---------- */
+var stage = document.getElementById('stage');
+function rescale(){
+  var s = document.documentElement.clientWidth / 1920;
+  stage.style.transform = 'scale(' + s + ')';
+  document.body.style.height = (stage.offsetHeight * s) + 'px';
+}
+window.addEventListener('resize', rescale);
+window.addEventListener('load', rescale);
+rescale();
+/* re-measure after fonts load so scaled height stays accurate */
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(rescale);
+</script>
+</body>
+</html>

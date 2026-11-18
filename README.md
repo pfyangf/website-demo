@@ -1,10 +1,10 @@
 ﻿# PULSAR 星脉官网设计演示
 
-包含星脉官网的 A、B、C、D 四个静态设计版本、前端源码和项目文档。
+包含星脉官网的 A、B、C、D、E 五个静态设计版本、前端源码和项目文档。
 
 ## 查看页面
 
-直接打开 `ui/compare.html` 比较四个版本。最新版 D 入口为 `ui/pulsar-precision.html`。
+直接打开 `ui/compare.html` 比较各版本。最新版 E 入口为 `ui/pulsar-deepspace.html`。
 
 也可在项目根目录运行：
 
@@ -14,7 +14,15 @@ python -m http.server 8080
 
 然后访问 `http://localhost:8080/ui/compare.html`。
 
-## 最新 D 版
+## 最新 E 版（深空智能 · 双语）
+
+E 版是设计稿转出的单文件静态页面，无本地图片资源（视觉全部由 CSS 绘制），自带中英文一键切换。主要文件：
+
+- `ui/pulsar-deepspace.html`
+
+E 版按 1920 设计稿实现，任意窗口宽度等比缩放；字体经 Google Fonts CDN 加载（Geist / Geist Mono / Manrope / Noto Sans SC），离线时回退系统字体。联系邮箱为设计占位。
+
+## D 版
 
 D 版是独立静态页面，主要文件：
 
