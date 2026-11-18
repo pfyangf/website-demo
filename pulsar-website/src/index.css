@@ -531,49 +531,80 @@ ol {
   color: var(--text);
 }
 
-/* Hero */
+/* Hero — station fills the first screen; type sits on the artwork. */
 .hero {
   min-height: 100svh;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding: calc(var(--nav-height) + 8px) 0 0;
+  justify-content: center;
+  padding: calc(var(--nav-height) + 20px) 24px 56px;
   text-align: center;
   overflow: hidden;
 }
 
-.hero-atmosphere {
-  pointer-events: none;
+.hero-visual {
   position: absolute;
   inset: 0;
-  z-index: 2;
+  z-index: 0;
+}
+
+.hero-stage {
+  position: absolute;
+  inset: -7% -4%;
+  animation: station-drift 28s ease-in-out infinite alternate;
+}
+
+.hero-core {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  display: block;
+  object-fit: cover;
+  object-position: 46% 46%;
+}
+
+.hero-shade {
+  position: absolute;
+  inset: 0;
   background:
-    linear-gradient(to bottom, rgba(5, 7, 13, 0.92) 0%, rgba(5, 7, 13, 0.55) 28%, rgba(5, 7, 13, 0.08) 48%, transparent 62%),
-    radial-gradient(ellipse at 50% 78%, rgba(77, 131, 255, 0.14), transparent 40%),
-    radial-gradient(ellipse at 50% 100%, rgba(115, 103, 240, 0.1), transparent 48%);
+    radial-gradient(ellipse 70% 54% at 50% 44%, rgba(6, 14, 28, 0.68) 0%, rgba(6, 14, 28, 0.36) 46%, rgba(6, 14, 28, 0) 72%),
+    linear-gradient(to bottom, rgba(5, 8, 16, 0.5) 0%, rgba(5, 8, 16, 0.08) 18%, rgba(5, 8, 16, 0) 42%, rgba(5, 8, 16, 0.28) 100%);
+  pointer-events: none;
+}
+
+.hero-glow {
+  position: absolute;
+  width: min(42vw, 520px);
+  aspect-ratio: 1;
+  left: 18%;
+  top: 42%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(90, 190, 255, 0.28), rgba(101, 229, 242, 0.08) 42%, transparent 70%);
+  animation: pulse-glow 6.5s ease-in-out infinite;
+  pointer-events: none;
 }
 
 .hero-copy {
   position: relative;
-  z-index: 3;
-  max-width: 1100px;
-  padding: 0 24px;
+  z-index: 2;
+  width: min(1080px, 100%);
+  transform: translateY(-4vh);
 }
 
 .hero-brand {
   font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.22em;
-  color: var(--muted);
+  color: #d7deea;
   margin-bottom: 12px;
 }
 
 .hero-title {
-  font-size: clamp(2.5rem, 1.45rem + 4.3vw, 6.25rem);
+  font-size: clamp(2.5rem, 1.2rem + 3.8vw, 5.5rem);
   font-weight: 800;
   letter-spacing: -0.045em;
   line-height: 0.94;
+  text-shadow: 0 10px 36px rgba(5, 8, 16, 0.45);
 }
 
 .hero-title span {
@@ -584,17 +615,18 @@ ol {
   margin-top: 16px;
   font-size: clamp(1.02rem, 0.95rem + 0.4vw, 1.25rem);
   font-weight: 500;
+  color: #f2f5fa;
 }
 
 .hero-supporting {
   margin-top: 8px;
-  color: var(--muted);
+  color: #d7deea;
 }
 
 .hero-body {
   margin: 14px auto 0;
   max-width: 38rem;
-  color: var(--muted);
+  color: #d7deea;
 }
 
 .hero-actions {
@@ -602,48 +634,12 @@ ol {
   flex-wrap: wrap;
   justify-content: center;
   gap: 12px;
-  margin-top: 20px;
+  margin-top: 22px;
 }
 
-.hero-visual {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  margin-top: 4px;
-  flex: 1 1 auto;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  min-height: 52vh;
-  overflow: hidden;
-}
-
-.hero-glow {
-  position: absolute;
-  width: 32%;
-  aspect-ratio: 1;
-  left: 42%;
-  top: 46%;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(77, 131, 255, 0.32), rgba(101, 229, 242, 0.1) 42%, transparent 70%);
-  animation: pulse-glow 6.5s ease-in-out infinite;
-  pointer-events: none;
-}
-
-.hero-stage {
-  width: min(1760px, 124%);
-  animation: station-drift 28s ease-in-out infinite alternate;
-}
-
-.hero-core {
-  position: relative;
-  width: 100%;
-  height: auto;
-  display: block;
-  transform: scale(1.18);
-  transform-origin: center 58%;
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, #000 92%, transparent 100%);
+.hero .btn-ghost {
+  background: rgba(5, 10, 22, 0.42);
+  border-color: rgba(242, 245, 250, 0.62);
 }
 
 @keyframes pulse-glow {
@@ -1616,15 +1612,11 @@ html[lang='zh-CN'] .innovation-title {
 
 /* Responsive */
 @media (max-height: 860px) and (min-width: 900px) {
-  .hero {
-    padding-top: calc(var(--nav-height) + 8px);
-  }
   .hero-body {
     display: none;
   }
-  .hero-visual {
-    min-height: 50vh;
-    margin-top: 0;
+  .hero-copy {
+    transform: translateY(-2vh);
   }
 }
 
@@ -1707,21 +1699,27 @@ html[lang='zh-CN'] .innovation-title {
   }
 
   .hero {
-    padding-top: calc(var(--nav-height) + 10px);
+    padding: calc(var(--nav-height) + 16px) 16px 40px;
     min-height: 100svh;
+    align-items: center;
   }
 
   .hero-body {
     display: none;
   }
 
-  .hero-visual {
-    min-height: 44vh;
+  .hero-copy {
+    transform: none;
   }
 
   .hero-core {
-    transform: scale(1.32);
-    transform-origin: center 48%;
+    object-position: 40% 42%;
+  }
+
+  .hero-shade {
+    background:
+      radial-gradient(ellipse 92% 58% at 50% 42%, rgba(6, 14, 28, 0.72) 0%, rgba(6, 14, 28, 0.4) 52%, rgba(6, 14, 28, 0.08) 78%),
+      linear-gradient(to bottom, rgba(5, 8, 16, 0.55) 0%, rgba(5, 8, 16, 0.1) 20%, rgba(5, 8, 16, 0.12) 70%, rgba(5, 8, 16, 0.4) 100%);
   }
 
   .about-content,
