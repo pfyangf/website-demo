@@ -46,3 +46,13 @@ npm run build
 注意：该构建流程不生成最新版 D；修改 D 应编辑上述静态源文件，避免使用历史生成流程覆盖它。
 
 依赖目录、构建产物、临时截图、备份及本地服务器发布记录不纳入版本控制。本仓库推送不更新服务器部署。
+
+## 交互式官网（独立 Vite 应用）
+
+`pulsar-website/` 是已经实现的官方首页：React + TypeScript + Vite，纯 CSS，默认英文，可切换简体中文。它与上面的 A–E 静态页面并列存放，是单独的 Vite 应用，不替换、也不改动那些静态页。
+
+本地运行：
+
+```sh
+cd pulsar-website && npm install && npm run dev
+```
