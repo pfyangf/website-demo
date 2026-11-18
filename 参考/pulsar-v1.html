@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>星脉发展有限公司 PULSAR Development Limited</title>
+<meta name="description" content="以香港为总部，连接中国内地与日本的长期资本。一级市场投资 · 二级市场投资 · 控股与长期持有 · 基金管理。官网原型。">
+<style>
+/* ============================================================
+   星脉发展 PULSAR — 原型框架样式
+   取法：方源资本式的极简克制（大量留白、细线分组、无卡片盒子）
+   叠加本项目方向 A「行情带」：数据行 + 等宽数字 + 深色反相区
+   Token 沿用 docs/UIUX-pulsar-website.md §3.1
+   ============================================================ */
+:root{
+  --page:#E9EDF3; --canvas:#F1F4F8; --surface:#FFFFFF; --ink:#0E1B33; --ink-muted:#5B6B7C;
+  --brand:#1F5F8B; --brand-hover:#17496C; --line:#D9E0E8;
+  --ink-strong:#33445C; --ink-meta:#66707D; --line-strong:#7F8B99;
+  --inverse:#0E1B33; --inverse-ink:#F6F7F9; --inverse-muted:#7A8794;
+  --inverse-brand:#4A93C4; --inverse-line:rgba(246,247,249,.12);
+  --seal:#A32E26; --data-rule:#D8DEE6;
+  /* 四地识别色：避开红绿涨跌轴，低饱和、彼此可分辨 */
+  --place-hkg:#1F5F8B; --place-bjs:#7551A8; --place-szx:#15707E; --place-tyo:#A2682C;
+  --shadow-sm:0 1px 2px rgba(14,27,51,.05),0 6px 16px -12px rgba(14,27,51,.14);
+  --max:1200px; --gut:32px;
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s6:24px; --s8:32px; --s12:48px; --s16:56px; --s24:72px;
+  --r-sm:2px; --r-md:4px; --r-lg:8px;
+  --sans:"Geist","Inter",-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font-family:var(--sans);
+  font-size:16px;line-height:1.7;font-weight:400;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{margin:0;font-weight:500;line-height:1.2;letter-spacing:-.01em}
+p{margin:0;max-width:72ch}
+a{color:var(--brand);text-decoration:none}
+a:hover{color:var(--brand-hover)}
+ul{margin:0;padding:0;list-style:none}
+img{max-width:100%;display:block}
+
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gut)}
+@media(max-width:1023px){.wrap{padding:0 24px}}
+@media(max-width:639px){.wrap{padding:0 20px}}
+
+/* 顶部导航：细、克制、sticky */
+.site-header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);
+  backdrop-filter:saturate(180%) blur(8px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:72px}
+.brand{display:flex;align-items:baseline;gap:10px;color:var(--ink)}
+.brand strong{font-size:18px;font-weight:500;letter-spacing:.02em}
+.brand span{font-size:11px;letter-spacing:.14em;color:var(--ink-meta);text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:28px}
+.nav-links a{font-size:14px;color:var(--ink-strong);padding:8px 0;border-bottom:2px solid transparent}
+.nav-links a:hover,.nav-links a[aria-current="page"]{color:var(--brand);border-bottom-color:var(--brand)}
+.nav-actions{display:flex;align-items:center;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:12px 20px;
+  border-radius:var(--r-md);font-size:14px;font-weight:500;border:1px solid transparent;
+  transition:background-color .15s,color .15s,border-color .15s}
+.btn--primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+.btn--primary:hover{background:var(--brand-hover);border-color:var(--brand-hover);color:#fff}
+.btn--outline{color:var(--brand);border-color:var(--brand)}
+.btn--outline:hover{background:var(--canvas)}
+/* 二级菜单：hover / focus-within 展开，键盘可达 */
+.nav-item{position:relative}
+.nav-item:hover>.nav-menu,.nav-item:focus-within>.nav-menu{opacity:1;visibility:visible;transform:translateY(0)}
+.nav-menu{position:absolute;left:-14px;top:calc(100% - 8px);min-width:212px;z-index:200;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
+  box-shadow:0 1px 2px rgba(14,27,51,.05),0 16px 40px -18px rgba(14,27,51,.28);
+  padding:6px;opacity:0;visibility:hidden;transform:translateY(-6px);
+  transition:opacity .14s,transform .14s,visibility .14s}
+.nav-menu a{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:9px 12px;border-radius:var(--r-md);font-size:13.5px;color:var(--ink-strong)}
+.nav-menu a:hover,.nav-menu a[aria-current="page"]{background:var(--canvas);color:var(--brand);border-bottom-color:transparent}
+.nav-menu .en{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-meta)}
+
+/* 定义列表（法务页条款） */
+.defs{border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;background:var(--surface);
+  box-shadow:var(--shadow-sm)}
+.def{display:grid;grid-template-columns:220px 1fr;gap:var(--s6);padding:16px 24px;
+  border-top:1px solid var(--line)}
+.def:first-child{border-top:0}
+.def dt{font-size:14px;font-weight:500;color:var(--ink)}
+.def dd{margin:0;font-size:14px;color:var(--ink-muted)}
+@media(max-width:767px){.def{grid-template-columns:1fr;gap:6px}}
+
+/* 双栏 / 三栏信息块 */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:var(--s6)}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s6)}
+@media(max-width:1023px){.grid-2,.grid-3{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:20px 22px;box-shadow:var(--shadow-sm)}
+.card h3{font-size:16px;margin-bottom:6px}
+.card p{margin-top:8px;font-size:14px;color:var(--ink-muted)}
+.meta-row{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--ink-meta);margin-top:10px}
+.pill{display:inline-flex;align-items:center;padding:3px 10px;border-radius:9999px;
+  background:var(--canvas);border:1px solid var(--line);font-size:11px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--ink-meta)}
+.lang{font-size:12px;letter-spacing:.1em;color:var(--ink-meta);border:1px solid var(--line-strong);
+  border-radius:9999px;padding:6px 14px;min-height:36px;display:inline-flex;align-items:center}
+@media(max-width:1023px){.nav-links{display:none}}
+
+/* 区块节奏：56 / 44 / 36（原 96/64/48，按反馈收紧） */
+.section{padding:56px 0}
+@media(max-width:1023px){.section{padding:44px 0}}
+@media(max-width:639px){.section{padding:36px 0}}
+.section--tight{padding:40px 0}
+.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-meta);font-weight:500}
+.section-title{margin-top:var(--s3);font-size:32px}
+.section-sub{margin-top:var(--s3);color:var(--ink-muted);font-size:18px;max-width:60ch}
+
+/* Hero：方源式克制——大留白 + 投资论点作主标，不放大图 */
+.hero{padding:52px 0 44px}
+.hero h1{font-size:clamp(34px,4.4vw,54px);line-height:1.1;letter-spacing:-.022em;max-width:16ch}
+.hero .lead{margin-top:var(--s4);font-size:17px;color:var(--ink-muted);max-width:54ch}
+.hero-actions{display:flex;gap:12px;margin-top:var(--s6);flex-wrap:wrap}
+.hero-grid{display:grid;grid-template-columns:7fr 5fr;gap:var(--s12);align-items:start}
+@media(max-width:1023px){.hero-grid{grid-template-columns:1fr;gap:var(--s12)}}
+
+/* 四地代码带：HKG / BJS / SZX / TYO + UTC 偏移（不用地图与经纬度） */
+[data-code="HKG"]{--place:var(--place-hkg)}
+[data-code="BJS"]{--place:var(--place-bjs)}
+[data-code="SZX"]{--place:var(--place-szx)}
+[data-code="TYO"]{--place:var(--place-tyo)}
+
+.tape{border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;
+  background:var(--surface);box-shadow:var(--shadow-sm)}
+.tape-head{display:flex;justify-content:space-between;padding:11px 20px;border-bottom:1px solid var(--line);
+  background:var(--canvas);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-meta)}
+.tape-row{position:relative;display:grid;grid-template-columns:auto 1fr auto;gap:var(--s4);align-items:baseline;
+  padding:13px 20px 13px 32px;border-top:1px solid var(--line);transition:background-color .15s}
+.tape-row:first-of-type{border-top:0}
+.tape-row::before{content:"";position:absolute;left:16px;top:13px;bottom:13px;width:3px;
+  border-radius:2px;background:var(--place)}
+.tape-row .code{font-family:var(--mono);font-size:24px;font-weight:500;letter-spacing:.04em;color:var(--place)}
+.tape-row .city{font-size:14px;color:var(--ink-muted)}
+.tape-row .utc{font-family:var(--mono);font-size:12px;color:var(--ink-meta);font-variant-numeric:tabular-nums;
+  background:var(--canvas);border:1px solid var(--line);border-radius:var(--r-sm);padding:2px 8px}
+.tape-row:hover{background:var(--canvas)}
+
+/* 关键数据条：数据一律「—」占位 + 截至日期 */
+.figures{display:grid;grid-template-columns:repeat(4,1fr);margin:0;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
+  box-shadow:var(--shadow-sm);padding:4px 28px}
+@media(max-width:767px){.figures{grid-template-columns:repeat(2,1fr);padding:4px 20px}}
+.figure{padding:22px 0}
+.figure+.figure{border-left:1px solid var(--line);padding-left:28px}
+@media(max-width:767px){
+  .figure:nth-child(3){border-left:0;padding-left:0}
+  .figure:nth-child(n+3){border-top:1px solid var(--line)}
+}
+.figure dt{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-meta)}
+.figure dd{margin:var(--s1) 0 0;font-size:30px;font-weight:500;font-family:var(--mono);
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+
+/* 业务四线：divide-y 数据行，非卡片（方向 A 核心形态） */
+.lines-wrap{display:grid;grid-template-columns:3fr 9fr;gap:var(--s6)}
+@media(max-width:1023px){.lines-wrap{grid-template-columns:1fr;gap:var(--s4)}}
+.line-row{display:grid;grid-template-columns:auto 1fr auto;gap:var(--s6);align-items:baseline;
+  padding:18px 24px;border-top:1px solid var(--line);border-left:1px solid var(--line);
+  border-right:1px solid var(--line);background:var(--surface);
+  transition:background-color .15s,box-shadow .15s}
+.line-row:first-of-type{border-radius:var(--r-lg) var(--r-lg) 0 0}
+.line-row:last-of-type{border-bottom:1px solid var(--line);border-radius:0 0 var(--r-lg) var(--r-lg)}
+.line-row:only-of-type{border-radius:var(--r-lg)}
+.line-row .no{font-family:var(--mono);font-size:13px;color:var(--brand)}
+.line-row .name{font-size:19px;font-weight:500}
+.line-row .en{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-meta);margin-top:2px}
+.line-row .desc{font-size:14px;color:var(--ink-muted);margin-top:4px;max-width:60ch}
+.line-row:hover{background:var(--canvas);position:relative;z-index:1;box-shadow:var(--shadow-sm)}
+.line-row:hover .arrow{color:var(--brand)}
+.arrow{font-size:18px;color:var(--ink-meta)}
+
+/* 组合台账 / 职位列表：白面板包裹的记录式表格 */
+.table-head{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 3fr;gap:var(--s4);
+  padding:12px 24px;border:1px solid var(--line);border-bottom:0;
+  border-radius:var(--r-lg) var(--r-lg) 0 0;background:var(--canvas);
+  font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-meta)}
+.rec{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 3fr;gap:var(--s4);align-items:baseline;
+  padding:16px 24px;border-top:1px solid var(--line);border-left:1px solid var(--line);
+  border-right:1px solid var(--line);background:var(--surface);font-size:14px;
+  transition:background-color .15s}
+.rec:not(:has(+ .rec)){border-bottom:1px solid var(--line);border-radius:0 0 var(--r-lg) var(--r-lg)}
+.rec:hover{background:var(--canvas)}
+@media(max-width:1023px){.table-head{display:none}
+  .rec{grid-template-columns:1fr 1fr;gap:6px}}
+.chip{display:inline-flex;align-items:center;padding:4px 12px;border-radius:9999px;
+  background:var(--canvas);color:var(--ink-strong);font-size:12px;border:1px solid var(--line)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:var(--s6)}
+
+/* 深色反相区：IR 入口与页脚（不随主题切换） */
+.inverse{background:var(--inverse);color:var(--inverse-ink)}
+.inverse a{color:var(--inverse-brand)}
+.inverse a:hover{color:var(--inverse-ink)}
+.ir-grid{display:grid;grid-template-columns:5fr 7fr;gap:var(--s16)}
+@media(max-width:1023px){.ir-grid{grid-template-columns:1fr;gap:var(--s8)}}
+.doc{display:grid;grid-template-columns:auto 1fr auto auto;gap:var(--s4);align-items:baseline;
+  padding:16px 0;border-top:1px solid var(--inverse-line);font-size:14px}
+.doc .size,.doc .date{font-family:var(--mono);font-size:12px;color:var(--inverse-muted)}
+
+/* 四地网络：白面板 + 每格顶部识别色条 */
+.offices{display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);
+  border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-sm)}
+@media(max-width:1023px){.offices{grid-template-columns:repeat(2,1fr)}
+  .office:nth-child(odd){border-left:0}
+  .office:nth-child(n+3){border-top:1px solid var(--line)}}
+@media(max-width:639px){.offices{grid-template-columns:1fr}
+  .office{border-left:0!important}
+  .office+.office{border-top:1px solid var(--line)}}
+.office{position:relative;padding:20px 22px 24px;border-left:1px solid var(--line)}
+.office:first-child{border-left:0}
+.office::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--place)}
+.office h3{font-family:var(--mono);font-size:22px;font-weight:500;letter-spacing:.04em;color:var(--place)}
+.office .utc{font-family:var(--mono);font-size:12px;color:var(--ink-meta);margin:0}
+.office p{margin-top:10px;font-size:14px;color:var(--ink-muted)}
+
+/* 合规：就地业绩声明 + 页脚 */
+.perf{font-size:12px;color:var(--ink-meta);margin-top:var(--s3)}
+.perf--inverse{color:var(--inverse-muted)}
+.notice{border-left:2px solid var(--seal);padding-left:var(--s4);font-size:12px;color:var(--ink-meta);margin-top:var(--s6)}
+.site-footer{padding:var(--s16) 0 var(--s8);font-size:13px}
+.footer-grid{display:grid;grid-template-columns:4fr 4fr 4fr;gap:var(--s8)}
+@media(max-width:767px){.footer-grid{grid-template-columns:1fr}}
+.footer-grid h4{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--inverse-muted);font-weight:500}
+.footer-grid ul li{margin-top:8px}
+.footer-bottom{margin-top:var(--s12);padding-top:var(--s4);border-top:1px solid var(--inverse-line);
+  display:flex;justify-content:space-between;gap:var(--s4);flex-wrap:wrap;color:var(--inverse-muted);font-size:12px}
+
+/* 通用排版件 */
+.prose h2.section-title{font-size:30px;margin-top:var(--s2)}
+.prose p.perf,.prose p.notice{font-size:12px;color:var(--ink-meta)}
+.prose h2{font-size:24px;margin-top:var(--s8)}
+.prose h3{font-size:18px;margin-top:var(--s6);color:var(--ink-strong)}
+.prose p{margin-top:10px;color:var(--ink-muted)}
+.prose ul{margin-top:10px}
+.prose li{padding-left:18px;position:relative;color:var(--ink-muted);margin-top:6px}
+.prose li::before{content:"";position:absolute;left:0;top:14px;width:6px;height:1px;background:var(--ink-meta)}
+.empty{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:var(--s6) var(--s8);color:var(--ink-muted);font-size:14px;box-shadow:var(--shadow-sm)}
+.page-head{padding:36px 0 26px;border-bottom:1px solid var(--line)}
+.page-head h1{font-size:clamp(30px,3.6vw,42px)}
+.page-head .lead{margin-top:var(--s3);color:var(--ink-muted);font-size:17px;max-width:60ch}
+.breadcrumb{font-size:12px;color:var(--ink-meta);margin-bottom:var(--s3)}
+.breadcrumb a{color:var(--ink-meta)}
+
+
+/* 单文件版路由样式 */
+section.pg[hidden]{display:none}
+.nav-links a.active{color:var(--brand)}
+@media(max-width:1023px){
+  .nav-links{display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface);
+    border-bottom:1px solid var(--line);flex-direction:column;padding:16px 24px;gap:12px;z-index:50}
+  .nav-links.open{display:flex}
+  .nav-toggle{display:inline-flex}
+}
+.nav-toggle{display:none;border:1px solid var(--line-strong);border-radius:8px;background:none;
+  padding:8px 10px;font:inherit;cursor:pointer}
+.site-header{position:relative}
+
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="#pg-index"><strong>星脉发展</strong><span>Pulsar</span></a>
+    <nav class="nav-links" aria-label="主导航">
+      <a href="#pg-index">首页</a>
+      <div class="nav-item"><a href="#pg-about">关于星脉</a><div class="nav-menu"><a href="#pg-leadership">管理层<span class="en">Leadership</span></a><a href="#pg-team">团队<span class="en">Team</span></a></div></div>
+      <div class="nav-item"><a href="#pg-investments">投资业务</a><div class="nav-menu"><a href="#pg-investments-primary-market">一级市场投资<span class="en">Primary Market</span></a><a href="#pg-investments-secondary-market">二级市场投资<span class="en">Public Market</span></a><a href="#pg-investments-listed-holdings">控股与长期持有<span class="en">Strategic Holdings</span></a><a href="#pg-investments-fund-management">基金管理<span class="en">Fund Management</span></a></div></div>
+      <a href="#pg-portfolio">投资组合</a>
+      <div class="nav-item"><a href="#pg-investor-relations">投资者关系</a><div class="nav-menu"><a href="#pg-ir-announcements">公告与披露<span class="en">Announcements</span></a><a href="#pg-ir-contact">联系 IR<span class="en">Contact IR</span></a></div></div>
+      <a href="#pg-insights">洞察与资讯</a>
+      <a href="#pg-careers">加入我们</a>
+    </nav>
+    <button class="nav-toggle" aria-label="打开菜单">菜单</button>
+    <div class="nav-actions">
+      <a class="lang" href="#pg-index" aria-label="切换语言">中 / EN</a>
+      <a class="btn btn--primary" href="#pg-portfolio">查看投资组合</a>
+    </div>
+  </div>
+</header>
+<main id="main">
+<section class="pg" id="pg-404" data-title="页面不存在（404） — 星脉发展 PULSAR Development Limited" hidden>
+  <div class="wrap" style="padding:88px 0 96px;text-align:center">
+    <p class="eyebrow">Error 404</p>
+    <h1 style="font-size:clamp(38px,6vw,64px);margin-top:12px">这个链接没有指向任何东西</h1>
+    <p class="lead" style="margin:16px auto 0;color:var(--ink-muted);max-width:48ch">页面可能被移动、重命名，或从未存在。<br>你可以回到首页，或直接前往最常用的两个入口。</p>
+    <div style="margin-top:28px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a class="btn btn--primary" href="#pg-index">返回首页</a>
+      <a class="btn btn--outline" href="#pg-investments">投资业务</a>
+      <a class="btn btn--outline" href="#pg-contact">联系我们</a>
+    </div>
+  </div>
+
+</section>
+<section class="pg" id="pg-about" data-title="关于星脉 — 星脉发展 PULSAR Development Limited" hidden>
+
+  <div class="wrap page-head">
+    <p class="breadcrumb"><a href="#pg-index">首页</a> / 关于星脉</p>
+    <h1>关于星脉</h1>
+    <p class="lead">一家可以把跨境说清楚的机构：说得出自己在做什么，拿得出可验证的证据，守得住披露的边界。</p>
+  </div>
+
+  <section class="section">
+    <div class="wrap prose">
+      <h2>投资理念</h2>
+      <p>我们只在看得懂的四个市场下注——中国香港、北京、深圳、日本。看不懂的生意不做，看错了的仓位不留。投资的判断标准是产业逻辑，不是估值套利。</p>
+      <h2>责任投资</h2>
+      <p>负责任投资的原则、执行方式与披露口径待客户确认后填充。行业通行参照为联合国负责任投资原则组织（UNPRI）的六项原则——内地头部机构多已签署；若客户决定签署或已签署，本节改写为正式表述并注明签署时间。未确认前，本节不作任何承诺性表述。</p>
+      <h2>里程碑</h2>
+      <p>待客户提供可披露的成立与发展节点后填充。所有数字须带截至日期，未确认前以「—」占位。</p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0">
+    <div class="wrap">
+      <p class="eyebrow">Cross-border Network</p>
+      <h2 class="section-title">跨境网络</h2>
+      <p class="section-sub">四地各一段能力叙事。不使用地图底图、不使用地标照片、不展示经纬度——城市代码一眼即懂，且更贴合金融语域。</p>
+      <div class="offices" style="margin-top:26px">
+        <div class="office" data-code="HKG"><h3>HKG</h3><p class="utc">UTC+8</p>
+          <p>香港 · 总部。资本运作、基金管理与投资者关系中枢。</p>
+          <p class="mono" style="font-size:12px;color:var(--ink-meta)">成立 — ｜ — 人</p>
+        </div>
+        <div class="office" data-code="BJS"><h3>BJS</h3><p class="utc">UTC+8</p>
+          <p>北京 · 华北投资团队。政策与产业研究、国企与科研机构对接。</p>
+          <p class="mono" style="font-size:12px;color:var(--ink-meta)">成立 — ｜ — 人</p>
+        </div>
+        <div class="office" data-code="SZX"><h3>SZX</h3><p class="utc">UTC+8</p>
+          <p>深圳 · 华南投资团队。先进制造与供应链尽调、投后运营支持。</p>
+          <p class="mono" style="font-size:12px;color:var(--ink-meta)">成立 — ｜ — 人</p>
+        </div>
+        <div class="office" data-code="TYO"><h3>TYO</h3><p class="utc">UTC+9</p>
+          <p>东京 · 日本市场研究。技术引进、产业方对接与跨境并购机会。</p>
+          <p class="mono" style="font-size:12px;color:var(--ink-meta)">成立 — ｜ — 人</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</section>
+<section class="pg" id="pg-careers" data-title="加入我们 — 星脉发展 PULSAR Development Limited" hidden>
+
+  <div class="wrap page-head">
+    <p class="breadcrumb"><a href="#pg-index">首页</a> / 加入我们</p>
+    <h1>我们招人很慢，但留人很久</h1>
+    <p class="lead">采用与投资同一套标准招人：看得懂生意、写得出论点、扛得住周期。</p>
+  </div>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="table-head"><span>职位</span><span>地点</span><span>要求</span><span></span><span></span></div>
+      <div class="rec"><span>投资经理</span><span>香港</span><span>5 年以上一级市场经验</span><span class="mono">—</span><span>待开放</span></div>
+      <div class="rec"><span>投资经理</span><span>深圳</span><span>3 年以上二级市场研究</span><span class="mono">—</span><span>待开放</span></div>
+      <div class="rec"><span>分析师</span><span>北京</span><span>2 年以上行研经验</span><span class="mono">—</span><span>待开放</span></div>
+      <p class="empty" style="margin-top:20px">暂无在招岗位，欢迎将简历发送至 careers@pulsar-dev.com，我们会在职位开放时主动联系。这是常态而非错误状态。</p>
+      <p class="perf" style="margin-top:16px">星脉不会通过即时通讯软件招聘，也不会向求职者收取任何费用。</p>
+    </div>
+  </section>
+
+</section>
+<section class="pg" id="pg-contact" data-title="联系我们 — 星脉发展 PULSAR Development Limited" hidden>
+
+  <div class="wrap page-head">
+    <p class="breadcrumb"><a href="#pg-index">首页</a> / 联系我们</p>
+    <h1>联系我们</h1>
+    <p class="lead">四地办公室与联络方式。不使用任何地理底图，仅以城市代码与 UTC 偏移呈现。</p>
+  </div>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="offices">
+        <div class="office" data-code="HKG"><h3>HKG</h3><p class="utc">UTC+8</p><p>香港 · 总部<br>地址待客户提供</p><p class="mono" style="font-size:12px;color:var(--ink-meta)">hk@pulsar-dev.com</p></div>
+        <div class="office" data-code="BJS"><h3>BJS</h3><p class="utc">UTC+8</p><p>北京<br>地址待客户提供</p><p class="mono" style="font-size:12px;color:var(--ink-meta)">bj@pulsar-dev.com</p></div>
+        <div class="office" data-code="SZX"><h3>SZX</h3><p class="utc">UTC+8</p><p>深圳<br>地址待客户提供</p><p class="mono" style="font-size:12px;color:var(--ink-meta)">sz@pulsar-dev.com</p></div>
+        <div class="office" data-code="TYO"><h3>TYO</h3><p class="utc">UTC+9</p><p>东京<br>地址待客户提供</p><p class="mono" style="font-size:12px;color:var(--ink-meta)">tyo@pulsar-dev.com</p></div>
+      </div>
+
+      <div style="margin-top:26px">
+        <h2 style="font-size:24px">投资者关系与媒体</h2>
+        <div class="rec" style="grid-template-columns:1fr 2fr"><span>IR</span><span class="mono">ir@pulsar-dev.com</span></div>
+        <div class="rec" style="grid-template-columns:1fr 2fr"><span>媒体</span><span class="mono">media@pulsar-dev.com</span></div>
+        <div class="rec" style="grid-template-columns:1fr 2fr"><span>招聘</span><span class="mono">careers@pulsar-dev.com</span></div>
+      </div>
+
+      <div class="notice">
+        官方渠道声明：星脉发展仅通过域名 pulsar-dev.com 及其后缀邮箱对外联络。我们不会通过即时通讯软件销售任何产品或基金份额，也不会向求职者收取任何费用。
+      </div>
+    </div>
+  </section>
+
+</section>
+<section class="pg" id="pg-index" data-title="星脉发展有限公司 PULSAR Development Limited">
+
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">Pulsar Development Limited</p>
+        <h1>我们只在看得懂的四个市场下注</h1>
+        <p class="lead">以香港为总部，连接中国内地与日本的长期资本。一级市场投资 · 二级市场投资 · 控股与长期持有 · 基金管理。</p>
+        <div class="hero-actions">
+          <a class="btn btn--primary" href="#pg-portfolio">查看投资组合</a>
+          <a class="btn btn--outline" href="#pg-investor-relations">投资者关系</a>
+        </div>
+      </div>
+      <div>
+        <div class="tape">
+          <div class="tape-head"><span>跨境网络</span><span>UTC</span></div>
+          <div class="tape-row" data-code="HKG"><span class="code">HKG</span><span class="city">香港 · 总部</span><span class="utc">+8</span></div>
+          <div class="tape-row" data-code="BJS"><span class="code">BJS</span><span class="city">北京 · 华北投资团队</span><span class="utc">+8</span></div>
+          <div class="tape-row" data-code="SZX"><span class="code">SZX</span><span class="city">深圳 · 华南投资团队</span><span class="utc">+8</span></div>
+          <div class="tape-row" data-code="TYO"><span class="code">TYO</span><span class="city">东京 · 日本市场研究</span><span class="utc">+9</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section--tight">
+    <div class="wrap">
+      <dl class="figures">
+        <div class="figure"><dt>在管资产规模</dt><dd>—</dd></div>
+        <div class="figure"><dt>投资组合企业</dt><dd>—</dd></div>
+        <div class="figure"><dt>投资年份跨度</dt><dd>—</dd></div>
+        <div class="figure"><dt>跨境办公室</dt><dd>4</dd></div>
+      </dl>
+      <p class="perf">数据待客户书面确认，未确认前一律以「—」占位，不填假数据。过往业绩并非未来表现的指标。</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">Investment Lines</p>
+      <h2 class="section-title">投资布局</h2>
+      <p class="section-sub">四条业务线共用同一套页面骨架：投资范围、投资标准、创造价值的方式、代表案例、负责人、常见问题——让出资人能逐条比对。</p>
+      <div class="lines-wrap" style="margin-top:26px">
+        <div><p class="meta" style="color:var(--ink-meta);font-size:13px">四条线本质均为投资业务，全站 URL 前缀统一为 /investments/</p></div>
+        <div>
+          <a class="line-row" href="#pg-investments-primary-market">
+            <span class="no">01</span>
+            <span><span class="name">一级市场投资</span><span class="en">Primary Markets</span>
+              <span class="desc">专注成长期与并购阶段的控股与少数股权投资，以中日产业协同与香港资本运作为差异化抓手。</span></span>
+            <span class="arrow">→</span>
+          </a>
+          <a class="line-row" href="#pg-investments-secondary-market">
+            <span class="no">02</span>
+            <span><span class="name">二级市场投资</span><span class="en">Public Markets</span>
+              <span class="desc">以基本面研究驱动的长周期集中持仓，覆盖港股、A 股与日本市场。本页不展示任何产品净值或收益率。</span></span>
+            <span class="arrow">→</span>
+          </a>
+          <a class="line-row" href="#pg-investments-listed-holdings">
+            <span class="no">03</span>
+            <span><span class="name">控股与长期持有</span><span class="en">Strategic Holdings</span>
+              <span class="desc">作为战略股东参与公司治理与长期价值创造，持有期限以产业周期而非基金周期衡量。</span></span>
+            <span class="arrow">→</span>
+          </a>
+          <a class="line-row" href="#pg-investments-fund-management">
+            <span class="no">04</span>
+            <span><span class="name">基金管理</span><span class="en">Fund Management</span>
+              <span class="desc">为机构出资人、家族办公室与母基金管理专项基金，覆盖美元与人民币双币种。</span></span>
+            <span class="arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">Newsroom</p>
+      <h2 class="section-title">最新动态</h2>
+      <p class="section-sub">交易公告、获奖与机构动态。参照头部机构 Newsroom 做法：日期前置、只列已确认事实，未发布的占位不写标题。</p>
+      <div style="margin-top:26px">
+        <div class="table-head"><span>类别</span><span>标题</span><span>格式</span><span>日期</span><span></span></div>
+        <div class="rec"><span>机构动态</span><span>待客户确认后发布</span><span class="mono">PDF</span><span class="mono">—</span><span>—</span></div>
+        <div class="rec"><span>基金公告</span><span>待客户确认后发布</span><span class="mono">PDF</span><span class="mono">—</span><span>—</span></div>
+        <div class="rec"><span>获奖与认可</span><span>待客户确认后发布</span><span class="mono">PDF</span><span class="mono">—</span><span>—</span></div>
+        <div style="margin-top:20px"><a class="btn btn--outline" href="#pg-ir-announcements">查看全部动态 →</a></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section inverse">
+    <div class="wrap ir-grid">
+      <div>
+        <p class="eyebrow" style="color:var(--inverse-muted)">Investor Relations</p>
+        <h2 class="section-title">投资者关系</h2>
+        <p style="color:var(--inverse-muted);margin-top:20px;max-width:44ch">面向出资人、合作方与监管机构的信息披露入口。定期报告、基金公告与监管披露在此发布。</p>
+        <p class="perf perf--inverse" style="margin-top:20px">本网站内容不构成任何证券或基金权益的出售要约或购买要约的招揽。</p>
+      </div>
+      <div>
+        <div class="doc"><span>定期报告</span><span>2026 中期报告</span><span class="size">PDF · — MB</span><span class="date">—</span></div>
+        <div class="doc"><span>基金公告</span><span>待客户确认后发布</span><span class="size">PDF · —</span><span class="date">—</span></div>
+        <div class="doc"><span>监管披露</span><span>待客户确认后发布</span><span class="size">PDF · —</span><span class="date">—</span></div>
+        <div class="doc"><span>联系 IR</span><span>ir@pulsar-dev.com</span><span class="size"></span><span class="date"></span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">Careers</p>
+      <h2 class="section-title">我们招人很慢，但留人很久</h2>
+      <p class="section-sub">采用与投资同一套标准招人：看得懂生意、写得出论点、扛得住周期。香港 · 北京 · 深圳 · 东京。</p>
+      <div style="margin-top:20px"><a class="btn btn--outline" href="#pg-careers">查看在招职位 —</a></div>
+    </div>
+  </section>
+
+</section>
+<section class="pg" id="pg-insights" data-title="洞察与资讯 — 星脉发展 PULSAR Development Limited" hidden>
+
+  <div class="wrap page-head">
+    <p class="breadcrumb"><a href="#pg-index">首页</a> / 洞察与资讯</p>
+    <h1>洞察与资讯</h1>
+    <p class="lead">我们只发布能写出投资含义的研究，不产出信息汇编。</p>
+  </div>
+
+  <section class="section">
+    <div class="wrap prose"><p class="empty">本页内容待客户确认发布节奏后上线。第一期文章列表、作者署名与订阅方式均需客户书面确认。</p>
+      <h2>我们怎么看待研究 <span style="font-size:14px;color:var(--ink-meta)">Our Approach</span></h2>
+      <p>研究不是内容营销。一篇文章只有在能推导出明确的投资含义、并写清什么情况会推翻该判断时才值得发表。因此这里更新频率不高——这只是我们不把它当作流量工具的结果。</p>
+      <h2>计划中的栏目 <span style="font-size:14px;color:var(--ink-meta)">Planned Sections</span></h2>
+      <div class="grid-3"><div class="card"><p class="pill">Primary</p><h3 style="margin-top:10px">产业跟踪</h3><p>围绕医疗健康、先进制造、消费服务与科技四条主线的一手调研。</p></div><div class="card"><p class="pill">Cross-border</p><h3 style="margin-top:10px">跨境观察</h3><p>中日两地产业转移、技术引进与供应链重构的跟踪笔记。</p></div><div class="card"><p class="pill">Method</p><h3 style="margin-top:10px">方法论</h3><p>我们的估值框架、尽调清单与反面备忘录写作方式。</p></div></div>
+      <p class="notice">据 PRD 明确不做清单：本期不包含站内搜索、文章归档分页与评论功能，以保持静态站的可维护性与加载性能。</p>
+      <p class="perf">本页任何内容均不构成投资建议。</p>
+    </div>
+  </section>
+
+</section>
+<section class="pg" id="pg-investments-fund-management" data-title="基金管理 — 星脉发展 PULSAR Development Limited" hidden>
+
+  <div class="wrap page-head">
+    <p class="breadcrumb"><a href="#pg-index">首页</a> / <a href="#pg-investments">投资业务</a> / 基金管理</p>
+    <h1>基金管理</h1>
+    <p class="lead">受托管理的每一分钱，都要经得起托管人与审计师的核对。</p>
+  </div>
+
+  <section class="section">
+    <div class="wrap prose"><h2>基金管理 <span style="font-size:14px;color:var(--ink-meta)">Fund Management</span></h2>
+      <p>为机构出资人、家族办公室与母基金管理专项基金，覆盖美元与人民币双币种。基金治理架构、LP 报告机制、托管与审计安排、反洗钱框架在出资人沟通材料中提供。</p>
+      <h3>投资范围</h3>
+      <ul><li>币种：美元、人民币双币种</li><li>出资人类型：机构投资者、家族办公室、母基金</li><li>报告机制：定期净值报告与年度审计（具体科目待客户确认）</li><li>托管与审计：独立托管行与外部审计安排，待客户确认后披露机构名称</li></ul>
+      <h3>我们如何创造价值</h3>
+      <p>受托责任优先于规模诉求。基金条款、费率结构与利益分配方式在私募备忘录中完整写明，不以口头承诺替代书面文件。</p>
+      <h3>投资委员会与负责人</h3>
+      <p>负责人：— ｜ 投资委员会构成：—</p>
+      <p class="perf">待客户书面确认后填充，未确认前不填任何数字或名称。</p>
+      <h3>代表案例</h3>
+      <p>基金业绩数据待客户确认后，仅在合格投资者范围内提供。本页不展示任何基金净值或收益率。</p>
+      <h3>常见问题</h3>
+      <h3>如何获取基金材料？</h3>
+      <p>通过「联系 IR」页面提出申请。我们仅向合资格或专业投资者提供基金文件，并需完成相应的投资者适当性程序。</p>
+      <h3>可以在网站直接申购吗？</h3>
+      <p>不可以。任何基金权益仅可依据私募备忘录、认购协议等正式法律文件发售，本网站不构成要约。</p>
+      <h3>风险提示</h3>
+      <p>基金投资不等同于存款，不保证本金不受损失，亦不保证最低收益。</p>
+      <p class="perf">过往业绩并非未来表现的指标。完整条款见风险披露页。</p>
+      <p class="notice">合规提示：若内地主体为中国证券投资基金业协会登记的私募基金管理人，本页可能依监管要求调整为 noindex（不参与搜索引擎索引）。默认状态为可被索引，待合规确认后调整。</p>
+    </div>
+  </section>
+
+</section>
+<section class="pg" id="pg-investments-listed-holdings" data-title="控股与长期持有 — 星脉发展 PULSAR Development Limited" hidden>
+
+  <div class="wrap page-head">
+    <p class="breadcrumb"><a href="#pg-index">首页</a> / <a href="#pg-investments">投资业务</a> / 控股与长期持有</p>
+    <h1>控股与长期持有</h1>
+    <p class="lead">以所有者而非交易者的身份持有，参与公司治理与长期价值创造。</p>
+  </div>
+
+  <section class="section">
+    <div class="wrap prose"><h2>控股与长期持有 <span style="font-size:14px;color:var(--ink-meta)">Strategic Holdings</span></h2>
+      <p>作为战略股东参与公司治理与长期价值创造。持有期限以产业周期而非基金周期衡量——我们不因为基金到期而卖出仍在创造价值的生意。</p>
+      <h3>投资范围</h3>
+      <ul><li>持股形态：控股，或具有董事会席位的战略性持股</li><li>参与方式：董事会席位、治理结构设计、管理层激励安排</li><li>持有期限：以产业周期衡量，不预设退出年份</li><li>适用范围：已上市与未上市公司均可</li></ul>
+      <h3>我们如何创造价值</h3>
+      <p>价值创造发生在持有期间的每一天，而不是退出那一刻。我们的工作集中在治理结构、资本配置纪律与关键人才决策上。</p>
+      <h3>投资委员会与负责人</h3>
+      <p>负责人：— ｜ 投资委员会构成：—</p>
+      <p class="perf">待客户书面确认后填充，未确认前不填任何数字或名称。</p>
+      <h3>代表案例</h3>
+      <p>已持有的上市公司，在客户书面确认后以事实陈述方式披露：公司全称、交易所代码、持股比例区间。未经确认不得披露具体持仓比例。</p>
+      <h3>常见问题</h3>
+      <h3>持有一家公司多久？</h3>
+      <p>没有固定期限。判断标准只有一个：这门生意是否仍在以我们认可的回报率创造价值。</p>
+      <h3>会参与日常经营吗？</h3>
+      <p>不参与日常经营，但在董事会层面深度参与资本配置与关键人事决策。</p>
+      <h3>风险提示</h3>
+      <p>战略性持股流动性受限，集中度风险高于分散化组合，且退出时点受市场与协议安排双重约束。</p>
+      <p class="perf">过往业绩并非未来表现的指标。完整条款见风险披露页。</p>
+    </div>
+  </section>
+
+</section>
+<section class="pg" id="pg-investments-primary-market" data-title="一级市场投资 — 星脉发展 PULSAR Development Limited" hidden>
+
+  <div class="wrap page-head">
+    <p class="breadcrumb"><a href="#pg-index">首页</a> / <a href="#pg-investments">投资业务</a> / 一级市场投资</p>
+    <h1>一级市场投资</h1>
+    <p class="lead">专注成长期与并购阶段的股权投入，纵跨境三地的产业协同。</p>
+  </div>
+
+  <section class="section">
+    <div class="wrap prose"><h2>一级市场投资 <span style="font-size:14px;color:var(--ink-meta)">Primary Market</span></h2>
+      <p>我们偏好能在跨境资源配置中获益的生意：日本的技术与工艺、内地的制造与市场规模、香港的资本运作通道。</p>
+      <h3>投资范围</h3>
+      <ul><li>单笔规模区间：待客户确认，未确认前不填数字</li><li>行业聚焦：医疗健康、先进制造、消费服务、科技</li><li>持股方式：控股，或以董事会席位为前提的少数股权</li><li>地域：中国内地、中国香港、日本</li><li>退出路径：上市、产业并购、二级转让</li></ul>
+      <h3>我们如何创造价值</h3>
+      <p>投后以产业资源导入为主，而非财务杠杆。香港与东京双枢纽负责技术引进与海外渠道，北京与深圳团队负责供应链与市场落地。</p>
+      <h3>投资委员会与负责人</h3>
+      <p>负责人：— ｜ 投资委员会构成：—</p>
+      <p class="perf">待客户书面确认后填充，未确认前不填任何数字或名称。</p>
+      <h3>代表案例</h3>
+      <p>案例清单待客户提供，并须取得被投方的书面展示同意。未获同意前，本页不出现任何企业名称。</p>
+      <h3>常见问题</h3>
+      <h3>多久可以完成一笔投资？</h3>
+      <p>从初次接触到签署正式文件通常需要数月，取决于尽调深度与交易结构复杂度。我们不承诺时间表。</p>
+      <h3>是否接受财务顾问或中介推荐的项目？</h3>
+      <p>接受。推荐项目同样走完整尽调流程，不因来源不同而放宽标准。</p>
+      <h3>风险提示</h3>
+      <p>一级市场投资流动性低、估值不确定、退出时点不可控，并存在单一项目集中度风险。</p>
+      <p class="perf">过往业绩并非未来表现的指标。完整条款见风险披露页。</p>
+    </div>
+  </section>
+
+</section>
+<section class="pg" id="pg-investments-secondary-market" data-title="二级市场投资 — 星脉发展 PULSAR Development Limited" hidden>
+
+  <div class="wrap page-head">
+    <p class="breadcrumb"><a href="#pg-index">首页</a> / <a href="#pg-investments">投资业务</a> / 二级市场投资</p>
+    <h1>二级市场投资</h1>
+    <p class="lead">以产业判断而非市场情绪决定持仓，持股周期以年计。</p>
+  </div>
+
+  <section class="section">
+    <div class="wrap prose"><h2>二级市场投资 <span style="font-size:14px;color:var(--ink-meta)">Public Market</span></h2>
+      <p>以基本面研究驱动的长周期集中持仓，覆盖港股、A 股与日本市场。我们不追逐短期波动，也不使用杠杆放大收益。</p>
+      <h3>投资范围</h3>
+      <ul><li>研究覆盖：中国香港、中国内地、日本三地上市证券</li><li>持仓周期：以年为单位，换手率刻意保持低位</li><li>集中度：允许集中于少数看得懂的公司</li><li>杠杆：不使用融资杠杆放大头寸</li></ul>
+      <h3>我们如何创造价值</h3>
+      <p>研究投入而非交易频次，是本条线的成本主体。每一笔买入都要求写成可复述的投资论点，并明确写出什么情况下会被证伪。</p>
+      <h3>投资委员会与负责人</h3>
+      <p>负责人：— ｜ 投资委员会构成：—</p>
+      <p class="perf">待客户书面确认后填充，未确认前不填任何数字或名称。</p>
+      <h3>代表案例</h3>
+      <p>本条线不展示持仓明细。个股层面的观点不构成任何投资建议。</p>
+      <h3>常见问题</h3>
+      <h3>为什么网站上没有任何收益率或净值数据？</h3>
+      <p>公开展示收益率在多个司法管辖区受到限制，且单一时点的收益率容易被误读。真实业绩数据仅在出资人沟通材料中提供。</p>
+      <h3>会公开推荐股票吗？</h3>
+      <p>不会。本网站的任何内容都不构成投资建议，也不推荐任何证券。</p>
+      <h3>风险提示</h3>
+      <p>二级市场投资面临市场价格波动、汇率、流动性与政策风险，本金可能亏损。</p>
+      <p class="perf">过往业绩并非未来表现的指标。完整条款见风险披露页。</p>
+    </div>
+  </section>
+
+</section>
+<section class="pg" id="pg-investments" data-title="投资业务 — 星脉发展 PULSAR Development Limited" hidden>
+
+  <div class="wrap page-head">
+    <p class="breadcrumb"><a href="#pg-index">首页</a> / 投资业务</p>
+    <h1>投资业务</h1>
+    <p class="lead">四条线共用同一套页面骨架，让出资人能逐条比对。</p>
+  </div>
+
+  <section class="section">
+    <div class="wrap prose"><p class="eyebrow">Investment Lines</p><h2 class="section-title">投资布局</h2>
+      <a class="line-row" href="#pg-investments-primary-market"><span class="no">01</span><span><span class="name">一级市场投资</span><span class="en">Primary Market</span><span class="desc">专注成长期与并购阶段的控股与少数股权投资，跨越中国内地、中国香港与日本三个市场。</span></span><span class="arrow">→</span></a><a class="line-row" href="#pg-investments-secondary-market"><span class="no">02</span><span><span class="name">二级市场投资</span><span class="en">Public Market</span><span class="desc">以基本面研究驱动的长周期集中持仓，覆盖港股、A 股与日本市场。</span></span><span class="arrow">→</span></a><a class="line-row" href="#pg-investments-listed-holdings"><span class="no">03</span><span><span class="name">控股与长期持有</span><span class="en">Strategic Holdings</span><span class="desc">作为战略股东参与公司治理，持有期限以产业周期而非基金周期衡量。</span></span><span class="arrow">→</span></a><a class="line-row" href="#pg-investments-fund-management"><span class="no">04</span><span><span class="name">基金管理</span><span class="en">Fund Management</span><span class="desc">为机构出资人、家族办公室与母基金管理专项基金，覆盖美元与人民币双币种。</span></span><span class="arrow">→</span></a>
+      <h2>为什么四条线共用一套骨架 <span style="font-size:14px;color:var(--ink-meta)">Uniform Skeleton</span></h2>
+      <p>页面骨架统一本身就是一种信息：它意味着四条线适用同一套投资标准、同一套披露纪律、同一套问责方式。出资人可以逐条比对，而不必在不同的叙述口径之间换算。</p>
+      <h3>每条线都回答同样的七个问题</h3>
+      <ul><li>投资范围：做什么，不做什么</li><li>投资标准：判断的最小公约数是什么</li><li>创造价值：钱之外还提供什么</li><li>代表案例：证据在哪里</li><li>负责人：谁对这个判断负责</li><li>常见问题：出资人反复问的那几件事</li><li>风险提示：什么情况下我们会错</li></ul>
+      <h3>四条线之间的关系</h3>
+      <p>它们不是四个独立的生意，而是同一套判断在四种不同资产形态上的应用：流动性不同、治理参与度不同、出资人类型不同，但研究标准与披露边界完全一致。</p>
+      <p class="notice">路径约定：四条业务线的网址前缀统一为 /investments/。四条线本质均为投资业务，统一前缀避免与“被投企业 / 旗下实业”混淆。</p>
+      <dl class="figures"><div class="figure"><dt>投资业务线</dt><dd>4</dd></div><div class="figure"><dt>覆盖流动性市场</dt><dd>3</dd></div><div class="figure"><dt>覆盖币种</dt><dd>2</dd></div><div class="figure"><dt>单笔规模区间</dt><dd>—</dd></div></dl><p class="perf">单笔规模待客户确认后填写，其余计数以本页清单为准。</p>
+    </div>
+  </section>
+
+</section>
+<section class="pg" id="pg-investor-relations" data-title="投资者关系 — 星脉发展 PULSAR Development Limited" hidden>
+
+  <div class="wrap page-head">
+    <p class="breadcrumb"><a href="#pg-index">首页</a> / 投资者关系</p>
+    <h1>投资者关系</h1>
+    <p class="lead">LP 信息、公告与披露、常见问答与 IR 联络。五分钟内能找到直接联系人。</p>
+  </div>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="table-head"><span>类别</span><span>标题</span><span>格式</span><span>日期</span><span></span></div>
+      <div class="rec"><span>定期报告</span><span>2026 中期报告</span><span class="mono">PDF</span><span class="mono">—</span><span>待发布</span></div>
+      <div class="rec"><span>基金公告</span><span>待客户确认后发布</span><span class="mono">PDF</span><span class="mono">—</span><span>待发布</span></div>
+      <div class="rec"><span>监管披露</span><span>待客户确认后发布</span><span class="mono">PDF</span><span class="mono">—</span><span>待发布</span></div>
+      <div style="margin-top:20px"><a class="btn btn--outline" href="#pg-ir-announcements">查看全部公告与披露 →</a></div>
+      <p class="empty" style="margin-top:16px">文件索引待客户提供。若文件缺失，显示文件名并提示「文件暂不可下载，请联系 IR」，不做死链。</p>
+    </div>
+  </section>
+
+  <section class="section inverse">
+    <div class="wrap ir-grid">
+      <div>
+        <h2 class="section-title">联系 IR</h2>
+        <p style="color:var(--inverse-muted);margin-top:16px">出资人问询请通过 IR 专用邮箱，与媒体联络分开处理。</p>
+        <div style="margin-top:20px"><a class="btn btn--primary" href="#pg-ir-contact">联系 IR 团队</a></div>
+      </div>
+      <div>
+        <div class="doc"><span>IR</span><span>ir@pulsar-dev.com</span><span class="size"></span><span class="date"></span></div>
+        <div class="doc"><span>媒体</span><span>media@pulsar-dev.com</span><span class="size"></span><span class="date"></span></div>
+        <p class="perf perf--inverse" style="margin-top:20px">本网站内容不构成任何证券或基金权益的出售要约或购买要约的招揽。任何基金权益仅可依据正式法律文件向合资格或专业投资者发售。</p>
+      </div>
+    </div>
+  </section>
+
+</section>
+<section class="pg" id="pg-ir-announcements" data-title="公告与披露 — 星脉发展 PULSAR Development Limited" hidden>
+
+  <div class="wrap page-head">
+    <p class="breadcrumb"><a href="#pg-index">首页</a> / <a href="#pg-investor-relations">投资者关系</a> / 公告与披露</p>
+    <h1>公告与披露</h1>
+    <p class="lead">面向出资人、合作方与监管机构的信息发布窗口，按时间倒序排列。</p>
+  </div>
+
+  <section class="section">
+    <div class="wrap prose"><dl class="figures"><div class="figure"><dt>已发布公告</dt><dd>—</dd></div><div class="figure"><dt>最近更新</dt><dd>—</dd></div><div class="figure"><dt>归档起始年</dt><dd>—</dd></div><div class="figure"><dt>订阅方式</dt><dd>联系 IR</dd></div></dl><p class="perf">计数与日期待客户确认后填写。</p>
+      <h2>公告列表 <span style="font-size:14px;color:var(--ink-meta)">Announcements</span></h2>
+      <div class="doc"><span>定期报告</span><span>2026 中期报告</span><span class="size">PDF · — MB</span><span class="date">—</span></div><div class="doc"><span>基金公告</span><span>待客户确认后发布</span><span class="size">PDF · —</span><span class="date">—</span></div><div class="doc"><span>监管披露</span><span>待客户确认后发布</span><span class="size">PDF · —</span><span class="date">—</span></div><div class="doc"><span>治理文件</span><span>待客户确认后发布</span><span class="size">PDF · —</span><span class="date">—</span></div>
+      <p class="empty">当前没有已发布的公告。历史公告在客户完成资料整理后上线，届时按公告发布日期倒序排列，每条附文件体积与格式标注。</p>
+      <h2>披露纪律 <span style="font-size:14px;color:var(--ink-meta)">Disclosure Discipline</span></h2>
+      <p>我们承诺：不选择性披露。任何向单一出资人提供的重大信息，同步向全体出资人提供。披露内容以书面文件为准，网页摘要与正式文件不一致时，以正式文件为准。</p>
+      <p class="perf">本网站内容不构成任何证券或基金权益的出售要约或购买要约的招揽。</p>
+    </div>
+  </section>
+
+</section>
+<section class="pg" id="pg-ir-contact" data-title="联系 IR — 星脉发展 PULSAR Development Limited" hidden>
+
+  <div class="wrap page-head">
+    <p class="breadcrumb"><a href="#pg-index">首页</a> / <a href="#pg-investor-relations">投资者关系</a> / 联系 IR</p>
+    <h1>联系 IR</h1>
+    <p class="lead">出资人与媒体的提问统一在此转达，由 IR 团队在规定时限内回复。</p>
+  </div>
+
+  <section class="section">
+    <div class="wrap prose"><h2>联系方式 <span style="font-size:14px;color:var(--ink-meta)">Contact</span></h2>
+      <dl class="defs"><div class="def"><dt>投资者关系</dt><dd>ir@pulsar-dev.com</dd></div><div class="def"><dt>媒体查询</dt><dd>media@pulsar-dev.com（邮箱域名待客户确认）</dd></div><div class="def"><dt>举报与合规事项</dt><dd>compliance@pulsar-dev.com（邮箱域名待客户确认）</dd></div><div class="def"><dt>办公地址</dt><dd>香港中环，具体地址待客户提供</dd></div><div class="def"><dt>回复时限</dt><dd>承诺在 5 个工作日内回应投资者查询（时限待客户确认）</dd></div></dl>
+      <p class="notice">本站为静态站点，不设后端表单，因此页面无法接收在线提交。请直接使用上述邮箱联系我们。若日后接入 ATS 或工单系统，此处的说明会同步更新。</p>
+      <h2>提交前的两点提示 <span style="font-size:14px;color:var(--ink-meta)">Before You Write</span></h2>
+      <ul><li>请勿在邮件中发送银行卡信息、身份证影像或其他敏感个人信息</li><li>涉及具体基金的业绩问询，需先完成投资者适当性确认</li></ul>
+      <h2>防诈骗提示 <span style="font-size:14px;color:var(--ink-meta)">Fraud Alert</span></h2>
+      <p>我们不会通过社交媒体私信、即时通讯软件或陌生号码推销任何投资产品，也不会要求将资金转入任何个人账户。任何以本机构名义进行的上述行为均属诈骗，请向监管渠道举报。</p>
+      <p>如需核实某个联系人或链接是否真实，请直接发邮件至上述邮箱求证，不要使用可疑邮件中的联系方式。</p>
+    </div>
+  </section>
+
+</section>
+<section class="pg" id="pg-leadership" data-title="管理层 — 星脉发展 PULSAR Development Limited" hidden>
+
+  <div class="wrap page-head">
+    <p class="breadcrumb"><a href="#pg-index">首页</a> / <a href="#pg-about">关于星脉</a> / 管理层</p>
+    <h1>管理层</h1>
+    <p class="lead">管理层的履历与分工是出资人尽调的第一手材料。未确认前，本页一列不写。</p>
+  </div>
+
+  <section class="section">
+    <div class="wrap prose"><p class="notice">本页内容需客户提供：姓名、职务、任职起始年份、履历摘要、照片授权范围。在提供前，本页保持占位状态，不出现任何虚构人名或职务。</p>
+      <h2>管理层 <span style="font-size:14px;color:var(--ink-meta)">Leadership</span></h2>
+      <div class="table-head"><span>姓名</span><span>职务</span><span>任职起始</span><span>履历摘要</span></div><div class="rec"><span>—</span><span>—</span><span>—</span><span>待客户书面确认后填充，未确认前不填任何数字或名称。</span></div><div class="rec"><span>—</span><span>—</span><span>—</span><span>待客户书面确认后填充，未确认前不填任何数字或名称。</span></div><div class="rec"><span>—</span><span>—</span><span>—</span><span>待客户书面确认后填充，未确认前不填任何数字或名称。</span></div>
+      <p class="perf">表格列数与实际任职人数以客户最终提供的数据为准。</p>
+      <h2>治理说明 <span style="font-size:14px;color:var(--ink-meta)">Governance</span></h2>
+      <p>投资决策由投资委员会集体作出，单一人士不享有最终决定权。投资委员会的构成、表决规则与利益冲突回避机制，在出资人沟通材料中完整提供。</p>
+      <p>本页不披露任何个人的薪酬、持股数量或外部任职信息，除非相关法律法规要求披露。</p>
+    </div>
+  </section>
+
+</section>
+<section class="pg" id="pg-legal-disclaimer" data-title="免责声明与重要提示 — 星脉发展 PULSAR Development Limited" hidden>
+
+  <div class="wrap page-head">
+    <p class="breadcrumb"><a href="#pg-index">首页</a> / 免责声明与重要提示</p>
+    <h1>免责声明与重要提示</h1>
+    <p class="lead">先把不能做的事说清楚，再说我们在做什么。</p>
+  </div>
+
+  <section class="section">
+    <div class="wrap prose"><p class="notice">以下条款为初始版本，需经客户律师复核后方可上线。</p>
+      <dl class="defs"><div class="def"><dt>不构成要约</dt><dd>本网站所载资料不构成在任何司法管辖区出售或购买任何证券、基金权益或其他投资产品的要约、邀请或招揽。</dd></div><div class="def"><dt>不构成投资建议</dt><dd>本网站内容仅供一般参考，未考虑任何特定人士的投资目标、财务状况或特定需求。</dd></div><div class="def"><dt>业绩不代表未来</dt><dd>过往业绩并非未来表现的指标，基金份额价值及其收益可能下跌或上升。</dd></div><div class="def"><dt>信息的时效性</dt><dd>本网站内容可能因法规调整而改变，恕不另行通知。</dd></div><div class="def"><dt>第三方链接</dt><dd>本站可能包含第三方网站的链接，我们不对第三方内容的准确性或合规性承担责任。</dd></div><div class="def"><dt>适用法律</dt><dd>本条款受香港特别行政区法律管辖（如内地主体适用，需另行补充说明）。</dd></div></dl>
+      <h2>重要提示 <span style="font-size:14px;color:var(--ink-meta)">Important Notes</span></h2>
+      <p>名称「星脉发展 / PULSAR Development Limited」、牌照编号与注册信息页脚部分待客户提供确认文案版本。</p>
+      <p class="perf">如有疑问，请通过「联系 IR」页面与我们取得联系。</p>
+    </div>
+  </section>
+
+</section>
+<section class="pg" id="pg-legal-privacy" data-title="隐私政策 — 星脉发展 PULSAR Development Limited" hidden>
+
+  <div class="wrap page-head">
+    <p class="breadcrumb"><a href="#pg-index">首页</a> / 隐私政策</p>
+    <h1>隐私政策</h1>
+    <p class="lead">不收集，就不必解释为什么收集。这是最有效的隐私政策。</p>
+  </div>
+
+  <section class="section">
+    <div class="wrap prose"><p class="notice">本政策需经客户律师复核，特别是 Cookie 与访问统计部分上线前的最终确认。</p>
+      <h2>我们收集什么 <span style="font-size:14px;color:var(--ink-meta)">What We Collect</span></h2>
+      <p>本站为纯静态网站，不使用后端数据库，不提供注册登录，也不设置在线表单。因此我们不通过网站收集任何个人信息。</p>
+      <p>通过邮件联系我们时，我们仅处理您主动提供的内容，用于回复用途，不做二次利用。</p>
+      <h2>Cookie 与访问统计 <span style="font-size:14px;color:var(--ink-meta)">Cookies &amp; Analytics</span></h2>
+      <p>当前版本不设置 Cookie，也不加载任何第三方统计脚本。若日后引入匿名化的流量统计，会在本页更新说明并提供关闭方式。</p>
+      <h2>第三方内容 <span style="font-size:14px;color:var(--ink-meta)">Third-party Content</span></h2>
+      <p>本站目前不嵌入任何第三方地图、社交插件或视频播放器。字体在本地托管，不会产生向第三方的请求。</p>
+      <h2>您的权利 <span style="font-size:14px;color:var(--ink-meta)">Your Rights</span></h2>
+      <ul><li>随时要求我们删除您主动发送过的邮件内容</li><li>要求更正我们持有的与您相关的不准确信息</li><li>了解我们处理您信息的具体方式</li></ul>
+      <p>行使上述权利，请发邮件至 ip@pulsar-dev.com（邮箱域名待客户确认）。</p>
+      <p class="perf">本政策最后更新时间：—（待客户确认发布时间）</p>
+    </div>
+  </section>
+
+</section>
+<section class="pg" id="pg-legal-risk-disclosure" data-title="风险披露 — 星脉发展 PULSAR Development Limited" hidden>
+
+  <div class="wrap page-head">
+    <p class="breadcrumb"><a href="#pg-index">首页</a> / 风险披露</p>
+    <h1>风险披露</h1>
+    <p class="lead">风险不能被消除，只能被识别、计量并如实告知。</p>
+  </div>
+
+  <section class="section">
+    <div class="wrap prose"><p class="notice">本页为初始版本，须经客户律师与合规负责人复核后上线。</p>
+      <dl class="defs"><div class="def"><dt>流动性风险</dt><dd>一级市场与战略性持股的转让受协议安排和市场条件双重约束，短期内可能无法变现。</dd></div><div class="def"><dt>估值风险</dt><dd>非上市资产的估值依赖假设与可比交易，实际成交价格可能显著偏离账面估值。</dd></div><div class="def"><dt>集中度风险</dt><dd>集中持仓在提升收益潜力的同时放大了单一标的的负面冲击，可能显著高于分散化组合的损失幅度。</dd></div><div class="def"><dt>市场风险</dt><dd>二级市场投资面临价格波动、汇率变动与流动性枯竭风险，本金可能发生亏损。</dd></div><div class="def"><dt>跨境与政策风险</dt><dd>跨境投资面临监管变化、外汇管制、税务调整与地缘因素带来的不确定性。</dd></div><div class="def"><dt>杠杆风险</dt><dd>若基金层面使用杠杆，收益与损失均会被同比例放大。</dd></div><div class="def"><dt>单一申报货币口径</dt><dd>多币种基金的收益率因币种不同可能存在显著差异，回报应以投资人选择的申赎币种为准。</dd></div></dl>
+      <p>以上清单不号称穷尽。投资有风险，投资者应在阅读正式法律文件并咨询专业顾问后作出决定。</p>
+      <p class="perf">过往业绩并非未来表现的指标。</p>
+    </div>
+  </section>
+
+</section>
+<section class="pg" id="pg-legal-terms" data-title="网站使用条款 — 星脉发展 PULSAR Development Limited" hidden>
+
+  <div class="wrap page-head">
+    <p class="breadcrumb"><a href="#pg-index">首页</a> / 网站使用条款</p>
+    <h1>网站使用条款</h1>
+    <p class="lead">使用权可以给，篡改的空间不给。</p>
+  </div>
+
+  <section class="section">
+    <div class="wrap prose"><p class="notice">本条款需经客户律师复核后上线。</p>
+      <dl class="defs"><div class="def"><dt>可接受使用</dt><dd>您可以在注明来源的前提下，为个人或内部业务目的浏览、打印本网站页面。</dd></div><div class="def"><dt>禁止事项</dt><dd>不得对本网站内容进行实质性修改、歪曲或断章取义引用；不得用于任何收费的再分发服务。</dd></div><div class="def"><dt>知识产权</dt><dd>本网站的内容、版式、标识与文字设计的著作权归本机构所有。未经书面许可，不得以商业目的复制或传播。</dd></div><div class="def"><dt>商标</dt><dd>本机构的名称与标识不得用于暗示对本机构观点或产品的认可。</dd></div><div class="def"><dt>免责</dt><dd>本网站按「现状」提供，我们不对内容的准确性、完整性或特定用途适用性作出保证。</dd></div><div class="def"><dt>链接到本站</dt><dd>欢迎链接至本站首页，但不得使用嵌套框架等技术方式呈现。</dd></div><div class="def"><dt>条款变更</dt><dd>我们保留更新本条款的权利，更新后的版本在本页公布。</dd></div></dl>
+      <p class="perf">本条款最后更新时间：—（待客户确认发布时间）</p>
+    </div>
+  </section>
+
+</section>
+<section class="pg" id="pg-portfolio" data-title="投资组合 — 星脉发展 PULSAR Development Limited" hidden>
+
+  <div class="wrap page-head">
+    <p class="breadcrumb"><a href="#pg-index">首页</a> / 投资组合</p>
+    <h1>投资组合</h1>
+    <p class="lead">组合是投资者关系的证据链，不是 logo 墙。每条记录标注业务线、地区、年份与状态，并附一句投资论点。</p>
+  </div>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="filters" role="group" aria-label="按行业筛选">
+        <button class="chip" aria-pressed="true">全部</button>
+        <button class="chip" aria-pressed="false">医疗健康</button>
+        <button class="chip" aria-pressed="false">先进制造</button>
+        <button class="chip" aria-pressed="false">消费服务</button>
+        <button class="chip" aria-pressed="false">科技</button>
+      </div>
+
+      <div class="table-head">
+        <span>企业</span><span>行业</span><span>年份</span><span>状态</span><span>投资论点</span>
+      </div>
+
+      <div class="rec"><span>—</span><span>医疗健康</span><span class="mono">—</span><span><span class="chip">—</span></span><span>待客户提供可公开案例清单及被投方授权后填充</span></div>
+      <div class="rec"><span>—</span><span>先进制造</span><span class="mono">—</span><span><span class="chip">—</span></span><span>待客户提供可公开案例清单及被投方授权后填充</span></div>
+      <div class="rec"><span>—</span><span>消费服务</span><span class="mono">—</span><span><span class="chip">—</span></span><span>待客户提供可公开案例清单及被投方授权后填充</span></div>
+
+      <p class="perf" style="margin-top:20px">本信息仅作说明用途，不构成业绩陈述，不构成任何证券或基金权益的出售要约或购买要约的招揽。过往业绩并非未来表现的指标。</p>
+    </div>
+  </section>
+
+</section>
+<section class="pg" id="pg-team" data-title="团队 — 星脉发展 PULSAR Development Limited" hidden>
+
+  <div class="wrap page-head">
+    <p class="breadcrumb"><a href="#pg-index">首页</a> / <a href="#pg-about">关于星脉</a> / 团队</p>
+    <h1>团队</h1>
+    <p class="lead">投资团队分布在四个城市，各自承担不同的能力角色。</p>
+  </div>
+
+  <section class="section">
+    <div class="wrap prose"><dl class="figures"><div class="figure"><dt>香港总部</dt><dd>—</dd></div><div class="figure"><dt>北京</dt><dd>—</dd></div><div class="figure"><dt>深圳</dt><dd>—</dd></div><div class="figure"><dt>东京</dt><dd>—</dd></div></dl><p class="perf">人数待客户确认后填写，并注明统计截止日期。</p>
+      <h2>分工 <span style="font-size:14px;color:var(--ink-meta)">Division of Labour</span></h2>
+      <div class="grid-3"><div class="card"><p class="pill">HKG</p><h3 style="margin-top:10px">香港 · 总部</h3><p>资本运作、基金管理与投资者关系中枢。</p></div><div class="card"><p class="pill">BJS</p><h3 style="margin-top:10px">北京 · 华北</h3><p>政策与产业研究、国企与科研机构对接。</p></div><div class="card"><p class="pill">SZX</p><h3 style="margin-top:10px">深圳 · 华南</h3><p>先进制造与供应链尽调、投后运营支持。</p></div><div class="card"><p class="pill">TYO</p><h3 style="margin-top:10px">东京 · 日本</h3><p>技术引进、产业方对接与跨境并购机会。</p></div></div>
+      <h2>招人标准 <span style="font-size:14px;color:var(--ink-meta)">Hiring Standard</span></h2>
+      <p>看得懂生意、写得出论点、扛得住周期。团队规模刻意保持克制——宁可少做一个项目，也不降低标准招人。详见「加入我们」。</p>
+      <p class="notice">个人履历页与照片不在本期范围内，待整理 work 后再决定是否单独立页。</p>
+    </div>
+  </section>
+
+</section>
+</main>
+<footer class="site-footer inverse">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <p style="font-size:16px">星脉发展有限公司<br><span style="font-size:12px;letter-spacing:.08em;color:var(--inverse-muted)">PULSAR DEVELOPMENT LIMITED</span></p>
+        <p style="color:var(--inverse-muted);margin-top:16px;font-size:13px">香港中环 · 北京 · 深圳 · 东京</p>
+        <div style="margin-top:20px"><a class="btn btn--primary" href="#pg-contact">联系我们</a></div>
+      </div>
+      <div>
+        <h4>站内导航</h4>
+        <ul>
+          <li><a href="#pg-investments">投资业务</a></li>
+          <li><a href="#pg-portfolio">投资组合</a></li>
+          <li><a href="#pg-team">团队</a></li>
+          <li><a href="#pg-investor-relations">投资者关系</a></li>
+          <li><a href="#pg-careers">人才招募</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>法律文件</h4>
+        <ul><li><a href="#pg-legal-disclaimer">免责声明与重要提示</a></li><li><a href="#pg-legal-risk-disclosure">风险披露</a></li><li><a href="#pg-legal-privacy">隐私政策</a></li><li><a href="#pg-legal-terms">网站使用条款</a></li></ul>
+      </div>
+      <div>
+        <h4>合规声明</h4>
+        <p style="color:var(--inverse-muted);font-size:12px">本网站信息仅供一般参考，不构成任何证券或基金权益的出售要约或购买要约的招揽，亦不构成投资建议。过往业绩不代表未来表现。牌照编号待法务确认。</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 PULSAR Development Limited</span>
+      <span>隐私政策 · 使用条款 · 风险披露</span>
+    </div>
+  </div>
+</footer>
+<script>
+(function(){
+  var nav = document.querySelectorAll('.nav-links a, .nav-links .nav-item > a');
+  function key(t){ return (t.getAttribute('href')||'').replace('#pg-',''); }
+  function show(){
+    var k = (location.hash || '#pg-index').replace('#pg-','');
+    var el = document.getElementById('pg-'+k);
+    if(!el){ k='index'; el=document.getElementById('pg-index'); }
+    document.querySelectorAll('section.pg').forEach(function(s){ s.hidden = (s!==el); });
+    // 顶部导航高亮
+    var top = {'leadership':'about','team':'about','investments-primary-market':'investments',
+      'investments-secondary-market':'investments','investments-listed-holdings':'investments',
+      'investments-fund-management':'investments','ir-announcements':'investor-relations',
+      'ir-contact':'investor-relations'}[k] || k;
+    nav.forEach(function(a){ a.classList.toggle('active', key(a)===top); });
+    document.title = el.getAttribute('data-title') || '星脉发展 PULSAR Development Limited';
+    window.scrollTo(0,0);
+    // 关闭移动端菜单
+    var m = document.querySelector('.nav-links'); if(m) m.classList.remove('open');
+  }
+  window.addEventListener('hashchange', show);
+  show();
+  // 移动端汉堡
+  var btn = document.querySelector('.nav-toggle');
+  if(btn) btn.addEventListener('click', function(){
+    document.querySelector('.nav-links').classList.toggle('open');
+  });
+})();
+</script>
+</body>
+</html>

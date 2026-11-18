@@ -1,0 +1,26 @@
+import {defineTheme} from '@astryxdesign/core/theme';
+export const pulsarTheme=defineTheme({name:'pulsar-network',tokens:{
+ '--color-background-surface':['#090f12','#090f12'],
+ '--color-background-wash':['#090f12','#090f12'],
+ '--color-background-elevated':['#121c20','#121c20'],
+ '--color-text-primary':['#edf5f5','#edf5f5'],
+ '--color-text-secondary':['#9bafb3','#9bafb3'],
+ '--color-accent':['#68efdc','#68efdc'],
+ '--color-border':['#26383d','#26383d'],
+ '--font-family-body':'"Segoe UI", "Microsoft YaHei", sans-serif',
+ '--font-family-heading':'"Segoe UI", "Microsoft YaHei", sans-serif',
+ '--network-grid':'#213136', '--network-muted':'#53696e', '--network-glow':'#68efdc',
+ '--network-rule':'rgba(166,217,215,.18)', '--network-dim':'rgba(104,239,220,.06)',
+ '--network-max':'84rem','--network-gutter':'clamp(1.25rem,5vw,5rem)',
+ '--network-display':'clamp(3.2rem,6.3vw,6.5rem)', '--network-title':'clamp(2rem,3.8vw,3.6rem)',
+ '--network-hairline':'0.0625rem','--network-section':'clamp(4.5rem,9vw,9rem)',
+ '--network-mono':'Consolas, monospace',
+ '--network-paper':'#edf1ed','--network-ink':'#10201b','--network-lime':'#c5f3ad',
+ '--network-slate':'#182523','--network-deep':'#0b1512',
+ '--network-large':'clamp(3.2rem,7vw,7rem)', '--network-space':'clamp(4rem,8vw,9rem)',
+ '--network-soft':'rgba(104,239,220,.16)',
+ '--galaxy-white':'#e8efff','--galaxy-blue':'#9dbdff','--galaxy-night':'#050912',
+ '--galaxy-panel':'rgba(9,18,35,.94)','--galaxy-rule':'rgba(157,189,255,.25)',
+ '--galaxy-panel-glow':'rgba(36,53,88,.94)',
+ '--globe-light':'#274b70','--globe-mid':'#142e4c','--globe-dark':'#07111f'
+}});
