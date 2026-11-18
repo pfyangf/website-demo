@@ -1,4 +1,5 @@
 import { useLanguage } from '../context/LanguageContext';
+import { publicAsset } from '../lib/asset';
 import { Reveal } from './Reveal';
 
 export function Innovation() {
@@ -8,7 +9,7 @@ export function Innovation() {
     <section id="innovation" className="section innovation" aria-labelledby="innovation-title">
       <div className="innovation-visual">
         <img
-          src="/images/innovation-depth.jpg"
+          src={publicAsset('images/innovation-depth.jpg')}
           alt={t.a11y.innovationVisual}
           width={1280}
           height={720}

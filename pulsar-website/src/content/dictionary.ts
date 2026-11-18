@@ -1,3 +1,5 @@
+import { publicAsset } from '../lib/asset';
+
 export type Lang = 'en' | 'zh';
 
 export const EMAIL = 'info@pulsar-dev.com';
@@ -80,7 +82,7 @@ export const TECHNOLOGIES = [
 export const SOLUTIONS = [
   {
     id: 'ai-apps',
-    image: '/images/solution-ai.jpg',
+    image: publicAsset('images/solution-ai.jpg'),
     layout: 'wide',
     en: {
       name: 'AI-Powered Applications',
@@ -93,7 +95,7 @@ export const SOLUTIONS = [
   },
   {
     id: 'automation',
-    image: '/images/solution-automation.jpg',
+    image: publicAsset('images/solution-automation.jpg'),
     layout: 'flip',
     en: {
       name: 'Intelligent Automation',
@@ -106,7 +108,7 @@ export const SOLUTIONS = [
   },
   {
     id: 'enterprise',
-    image: '/images/solution-enterprise.jpg',
+    image: publicAsset('images/solution-enterprise.jpg'),
     layout: 'cinematic',
     en: {
       name: 'Enterprise Digital Solutions',
@@ -119,7 +121,7 @@ export const SOLUTIONS = [
   },
   {
     id: 'data',
-    image: '/images/solution-data.jpg',
+    image: publicAsset('images/solution-data.jpg'),
     layout: 'compact',
     en: {
       name: 'Data Intelligence',
@@ -135,7 +137,7 @@ export const SOLUTIONS = [
 export const PRODUCTS = [
   {
     id: 'ai-platform',
-    image: '/images/product-ai-platform.jpg',
+    image: publicAsset('images/product-ai-platform.jpg'),
     featured: true,
     en: {
       name: 'AI Intelligence Platform',
@@ -157,7 +159,7 @@ export const PRODUCTS = [
   },
   {
     id: 'agent-system',
-    image: '/images/product-agent.jpg',
+    image: publicAsset('images/product-agent.jpg'),
     featured: false,
     en: {
       name: 'Intelligent Agent System',
@@ -179,7 +181,7 @@ export const PRODUCTS = [
   },
   {
     id: 'collab-platform',
-    image: '/images/product-collab.jpg',
+    image: publicAsset('images/product-collab.jpg'),
     featured: false,
     en: {
       name: 'Digital Collaboration Platform',
@@ -200,7 +202,7 @@ export const PRODUCTS = [
   },
   {
     id: 'data-engine',
-    image: '/images/product-data.jpg',
+    image: publicAsset('images/product-data.jpg'),
     featured: false,
     en: {
       name: 'Smart Data Engine',
@@ -224,7 +226,7 @@ export const PRODUCTS = [
 export const NEWS = [
   {
     id: 'agents-path',
-    image: '/images/news-agents.jpg',
+    image: publicAsset('images/news-agents.jpg'),
     featured: true,
     en: {
       category: 'Technology Exploration',
@@ -250,7 +252,7 @@ export const NEWS = [
   },
   {
     id: 'automation-thinking',
-    image: '/images/news-automation.jpg',
+    image: publicAsset('images/news-automation.jpg'),
     featured: false,
     en: {
       category: 'Design Thinking',
@@ -275,7 +277,7 @@ export const NEWS = [
   },
   {
     id: 'software-architecture',
-    image: '/images/news-architecture.jpg',
+    image: publicAsset('images/news-architecture.jpg'),
     featured: false,
     en: {
       category: 'Industry Insight',

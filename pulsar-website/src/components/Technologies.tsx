@@ -1,6 +1,7 @@
 import { useState, type KeyboardEvent } from 'react';
 import { TECHNOLOGIES } from '../content/dictionary';
 import { useLanguage } from '../context/LanguageContext';
+import { publicAsset } from '../lib/asset';
 import { Reveal } from './Reveal';
 
 export function Technologies() {
@@ -38,7 +39,7 @@ export function Technologies() {
         <div className="tech-layout">
           <div className="tech-visual" id="tech-visual" role="tabpanel" aria-labelledby={`tech-tab-${item.id}`}>
             <img
-              src="/images/tech-exploded.jpg"
+              src={publicAsset('images/tech-exploded.jpg')}
               alt={t.a11y.techVisual}
               width={1024}
               height={1024}

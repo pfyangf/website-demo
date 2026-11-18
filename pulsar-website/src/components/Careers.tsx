@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { CITIES } from '../content/dictionary';
 import { useLanguage } from '../context/LanguageContext';
 import { useReducedMotion } from '../hooks/useReducedMotion';
+import { publicAsset } from '../lib/asset';
 import { scrollToId } from '../lib/scroll';
 import { Modal } from './Modal';
 import { Reveal } from './Reveal';
@@ -20,7 +21,7 @@ export function Careers() {
     <section id="careers" className="section careers" aria-labelledby="careers-title">
       <div className="careers-visual">
         <img
-          src="/images/careers-luminous.jpg"
+          src={publicAsset('images/careers-luminous.jpg')}
           alt={t.a11y.careersVisual}
           width={1280}
           height={720}

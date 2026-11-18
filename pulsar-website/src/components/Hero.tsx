@@ -1,4 +1,5 @@
 import { useLanguage } from '../context/LanguageContext';
+import { publicAsset } from '../lib/asset';
 
 export function Hero() {
   const { t } = useLanguage();
@@ -30,7 +31,7 @@ export function Hero() {
         <div className="hero-stage">
           <img
             className="hero-core"
-            src="/images/hero-station.jpg"
+            src={publicAsset('images/hero-station.jpg')}
             alt={t.a11y.heroVisual}
             width={1280}
             height={720}

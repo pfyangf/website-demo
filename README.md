@@ -12,7 +12,7 @@
 python -m http.server 8080
 ```
 
-然后访问 `http://localhost:8080/ui/compare.html`。
+然后访问 `http://localhost:8080/ui/compare.html`。方向 F 的静态预览在同一比较页中，单独打开为 `http://localhost:8080/pulsar-website/preview/index.html`。
 
 ## 最新 E 版（深空智能 · 双语）
 
@@ -56,3 +56,5 @@ npm run build
 ```sh
 cd pulsar-website && npm install && npm run dev
 ```
+
+比较页方向 F 使用已构建的静态预览 `pulsar-website/preview/`，不依赖开发服务器。更新源码后在该目录执行 `npm run build`，产物会写入 `preview/`（相对路径，可供比较页 iframe 和根目录静态服务直接打开）。默认选中的仍是 D。

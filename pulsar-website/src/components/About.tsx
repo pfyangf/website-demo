@@ -1,4 +1,5 @@
 import { useLanguage } from '../context/LanguageContext';
+import { publicAsset } from '../lib/asset';
 import { Reveal } from './Reveal';
 
 export function About() {
@@ -8,7 +9,7 @@ export function About() {
     <section id="about" className="section about" aria-labelledby="about-title">
       <div className="about-visual">
         <img
-          src="/images/about-luminous.jpg"
+          src={publicAsset('images/about-luminous.jpg')}
           alt={t.a11y.aboutVisual}
           width={1280}
           height={720}
